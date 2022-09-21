@@ -77,13 +77,14 @@ public class UserTypeServiceImpl implements IUserTypeService {
 
 	@Override
 	public String deleteUserType(int idUserType) {
-		final UserType userTypeSaved = validateUserType(idUserType);
+		UserType userTypeSaved = validateUserType(idUserType);
 		if (!Objects.isNull(userTypeSaved)) {
 			userTypeSaved.setUpdateDate(this.calendar.getTime());
 			userTypeSaved.setUserTpState(Constants.FALSE_VALUE);
+			userTypeSaved = userTypeRepository.save(userTypeSaved);
 			return "UserType deleted";
 		}
-		return "The UserType is no registred in database or alredy deleted";
+		return "The UserType is no registred in database or already deleted";
 	}
 
 }

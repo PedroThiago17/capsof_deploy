@@ -31,6 +31,7 @@ import com.upn.sistemas.capsof_project.model.repository.UserTypeRepository;
 import com.upn.sistemas.capsof_project.service.IUserService;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
+import com.upn.sistemas.capsof_project.service.dto.UserUpdateDTO;
 import com.upn.sistemas.capsof_project.utils.Constants;
 
 @Service("userService")
@@ -97,23 +98,27 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	public UserDTO addUser(UserSaveDTO userSave) {
 		final Optional<UserType> defaultRole = userTypeRepository.findById(Constants.ROLE_USER_VALUE);
 
-		User userModel = this.maper.map(userSave, User.class);
-		userModel.setUserPass(passwordEncoder.encode(userSave.getUserPass()));
-		userModel.setCreationDate(calendar.getTime());
-		userModel.setUserState(Constants.TRUE_VALUE.trim());
-		userModel = userRepository.save(userModel);
+		if (Objects.isNull(findByUserEmail(userSave.getUserEmail()))) {
+			User userModel = this.maper.map(userSave, User.class);
+			userModel.setUserPass(passwordEncoder.encode(userSave.getUserPass()));
+			userModel.setCreationDate(calendar.getTime());
+			userModel.setUserState(Constants.TRUE_VALUE.trim());
+			userModel = userRepository.save(userModel);
 
-		UserRolesPK userRolesPK = new UserRolesPK(defaultRole.get().getUserTpId(), userModel.getUserId());
-		UserRoles roleUserModel = new UserRoles(userRolesPK);
-		roleUserModel.setCreationDate(calendar.getTime());
-		roleUserModel.setRoleState(Constants.TRUE_VALUE.trim());
-		roleUserModel.setUserApp(userModel);
-		roleUserModel.setUserType(defaultRole.get());
-		roleUserModel = userRolesRepository.save(roleUserModel);
+			UserRolesPK userRolesPK = new UserRolesPK(defaultRole.get().getUserTpId(), userModel.getUserId());
+			UserRoles roleUserModel = new UserRoles(userRolesPK);
+			roleUserModel.setCreationDate(calendar.getTime());
+			roleUserModel.setRoleState(Constants.TRUE_VALUE.trim());
+			roleUserModel.setUserApp(userModel);
+			roleUserModel.setUserType(defaultRole.get());
+			roleUserModel = userRolesRepository.save(roleUserModel);
 
-		UserDTO userSaved = this.maper.map(userModel, UserDTO.class);
-		userSaved.setRoles(Arrays.asList(defaultRole.get().getUserTpDesc()));
-		return userSaved;
+			UserDTO userSaved = this.maper.map(userModel, UserDTO.class);
+			userSaved.setRoles(Arrays.asList(defaultRole.get().getUserTpDesc()));
+			return userSaved;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -126,6 +131,48 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 			return userDTO;
 		} else {
 			return null;
+		}
+	}
+
+	@Override
+	public UserDTO updateUser(UserUpdateDTO userUpdate) {
+
+		Optional<User> userSaved = userRepository.findById(userUpdate.getUserId());
+
+		if (userSaved.isPresent()) {
+			User userModel = userSaved.get();
+			userModel.setUserNames(userUpdate.getUserNames());
+			userModel.setUserLastNames(userUpdate.getUserLastNames());
+			userModel.setUserDesc(userUpdate.getUserDesc());
+			userModel.setUserEmail(userUpdate.getUserEmail());
+			userModel.setUserPhone(userUpdate.getUserPhone());
+			userModel.setUpdateDate(calendar.getTime());
+			userModel = userRepository.save(userModel);
+
+			UserDTO userDTO = this.maper.map(userModel, UserDTO.class);
+			userDTO.setRoles(userModel.getUserRolesList().stream().map(r -> r.getUserType().getUserTpDesc())
+					.collect(Collectors.toList()));
+
+			return userDTO;
+		}
+		return null;
+	}
+
+	@Override
+	public String deleteUser(Long idUser) {
+		Optional<User> userSaved = userRepository.findById(idUser);
+		if (userSaved.isPresent()) {
+			if (userSaved.get().getUserState().trim().toUpperCase().equals(Constants.TRUE_VALUE.trim().toUpperCase())) {
+				User userModel = userSaved.get();
+				userModel.setUpdateDate(this.calendar.getTime());
+				userModel.setUserState(Constants.FALSE_VALUE);
+				userModel = userRepository.save(userModel);
+				return "User deleted";
+			} else {
+				return "User already deleted";
+			}
+		} else {
+			return "The UserType is no registred in database";
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.upn.sistemas.capsof_project.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.upn.sistemas.capsof_project.service.IUserService;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
+import com.upn.sistemas.capsof_project.service.dto.UserUpdateDTO;
 import com.upn.sistemas.capsof_project.utils.Constants;
 import com.upn.sistemas.capsof_project.utils.ErrorMessage;
 
@@ -63,6 +65,10 @@ public class UserController {
 	public ResponseEntity<Object> addUser(@Validated @RequestBody UserSaveDTO userSave) {
 		try {
 			final UserDTO response = this.userService.addUser(userSave);
+			if (Objects.isNull(response)) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+						.body(new String("User email alredy exist"));
+			}
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +77,7 @@ public class UserController {
 
 	}
 
-	@PutMapping(value = "/getUserById/{userId}")
+	@GetMapping(value = "/getUserById/{userId}")
 	@ApiOperation(value = Constants.USER_TP_API_OP_FIND)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
@@ -81,6 +87,42 @@ public class UserController {
 	public ResponseEntity<Object> getUserById(@PathVariable Long userId) {
 		try {
 			final UserDTO response = this.userService.findById(userId);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+					.body(e.getLocalizedMessage());
+		}
+
+	}
+
+	@PutMapping(value = "/updateUser")
+	@ApiOperation(value = Constants.USER_API_OP_PUT)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDTO userUpdateDto) {
+		try {
+			final UserDTO response = this.userService.updateUser(userUpdateDto);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+					.body(e.getLocalizedMessage());
+		}
+
+	}
+
+	@PutMapping(value = "/deleteUser/{userId}")
+	@ApiOperation(value = Constants.USER_API_OP_DELETE)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> deleteUser(@PathVariable Long userId) {
+		try {
+			final String response = this.userService.deleteUser(userId);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)

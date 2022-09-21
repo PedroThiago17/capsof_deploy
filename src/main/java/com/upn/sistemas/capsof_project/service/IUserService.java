@@ -5,6 +5,7 @@ import java.util.List;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
+import com.upn.sistemas.capsof_project.service.dto.UserUpdateDTO;
 
 public interface IUserService {
 
@@ -15,4 +16,8 @@ public interface IUserService {
 	public UserDTO addUser(UserSaveDTO userSave);
 
 	public UserDTO findById(Long idUser);
+
+	public UserDTO updateUser(UserUpdateDTO userUpdate);
+
+	public String deleteUser(Long idUser);
 }

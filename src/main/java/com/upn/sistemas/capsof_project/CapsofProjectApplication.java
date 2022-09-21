@@ -22,7 +22,6 @@ public class CapsofProjectApplication implements CommandLineRunner {
 
 		for (int i = 0; i < 4; i++) {
 			String passEncode = passwordEncoder.encode(pass);
-			System.out.println(passEncode);
 		}
 	}
 
