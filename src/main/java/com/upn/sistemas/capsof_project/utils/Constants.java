@@ -24,6 +24,7 @@ public class Constants {
 	public static final String USER_TP_API_OP_PUT = "Update a UserType into database";
 	public static final String USER_TP_API_OP_DELETE = "Delete a UserType from database";
 	public static final String USER_TP_API_OP_FIND = "Find a UserType from database";
+	public static final String USER_TP_API_OP_FIND_BY_ID = "Find a UserType by ID from database";
 	/* End UserType Controller */
 
 	/* User Controller */
