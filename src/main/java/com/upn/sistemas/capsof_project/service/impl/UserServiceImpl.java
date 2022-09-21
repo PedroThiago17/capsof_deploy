@@ -115,4 +115,17 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 		userSaved.setRoles(Arrays.asList(defaultRole.get().getUserTpDesc()));
 		return userSaved;
 	}
+
+	@Override
+	public UserDTO findById(Long idUser) {
+		if (!Objects.isNull(idUser)) {
+			Optional<User> user = userRepository.findById(idUser);
+			UserDTO userDTO = this.maper.map(user.get(), UserDTO.class);
+			userDTO.setRoles(user.get().getUserRolesList().stream().map(r -> r.getUserType().getUserTpDesc())
+					.collect(Collectors.toList()));
+			return userDTO;
+		} else {
+			return null;
+		}
+	}
 }

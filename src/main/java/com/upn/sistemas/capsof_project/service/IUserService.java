@@ -13,4 +13,6 @@ public interface IUserService {
 	public User findByUserEmail(String userEmail);
 
 	public UserDTO addUser(UserSaveDTO userSave);
+
+	public UserDTO findById(Long idUser);
 }
