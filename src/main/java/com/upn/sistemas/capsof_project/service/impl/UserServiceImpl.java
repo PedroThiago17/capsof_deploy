@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -98,25 +99,29 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	public UserDTO addUser(UserSaveDTO userSave) {
 		final Optional<UserType> defaultRole = userTypeRepository.findById(Constants.ROLE_USER_VALUE);
 
-		if (Objects.isNull(findByUserEmail(userSave.getUserEmail()))) {
-			User userModel = this.maper.map(userSave, User.class);
-			userModel.setUserPass(passwordEncoder.encode(userSave.getUserPass()));
-			userModel.setCreationDate(calendar.getTime());
-			userModel.setUserState(Constants.TRUE_VALUE.trim());
-			userModel = userRepository.save(userModel);
+		try {
+			if (Objects.isNull(findByUserEmail(userSave.getUserEmail()))) {
+				User userModel = this.maper.map(userSave, User.class);
+				userModel.setUserPass(passwordEncoder.encode(userSave.getUserPass()));
+				userModel.setCreationDate(calendar.getTime());
+				userModel.setUserState(Constants.TRUE_VALUE.trim());
+				userModel = userRepository.save(userModel);
 
-			UserRolesPK userRolesPK = new UserRolesPK(defaultRole.get().getUserTpId(), userModel.getUserId());
-			UserRoles roleUserModel = new UserRoles(userRolesPK);
-			roleUserModel.setCreationDate(calendar.getTime());
-			roleUserModel.setRoleState(Constants.TRUE_VALUE.trim());
-			roleUserModel.setUserApp(userModel);
-			roleUserModel.setUserType(defaultRole.get());
-			roleUserModel = userRolesRepository.save(roleUserModel);
+				UserRolesPK userRolesPK = new UserRolesPK(defaultRole.get().getUserTpId(), userModel.getUserId());
+				UserRoles roleUserModel = new UserRoles(userRolesPK);
+				roleUserModel.setCreationDate(calendar.getTime());
+				roleUserModel.setRoleState(Constants.TRUE_VALUE.trim());
+				roleUserModel.setUserApp(userModel);
+				roleUserModel.setUserType(defaultRole.get());
+				roleUserModel = userRolesRepository.save(roleUserModel);
 
-			UserDTO userSaved = this.maper.map(userModel, UserDTO.class);
-			userSaved.setRoles(Arrays.asList(defaultRole.get().getUserTpDesc()));
-			return userSaved;
-		} else {
+				UserDTO userSaved = this.maper.map(userModel, UserDTO.class);
+				userSaved.setRoles(Arrays.asList(defaultRole.get().getUserTpDesc()));
+				return userSaved;
+			} else {
+				return new UserDTO();
+			}
+		} catch (DataIntegrityViolationException e) {
 			return null;
 		}
 	}

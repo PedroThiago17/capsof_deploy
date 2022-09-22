@@ -67,7 +67,11 @@ public class UserController {
 			final UserDTO response = this.userService.addUser(userSave);
 			if (Objects.isNull(response)) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-						.body(new String("User email alredy exist"));
+						.body(new String("User DNI alraedy exist"));
+			}
+			if (Objects.isNull(response.getUserEmail())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+						.body(new String("User email alraedy exist"));
 			}
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {

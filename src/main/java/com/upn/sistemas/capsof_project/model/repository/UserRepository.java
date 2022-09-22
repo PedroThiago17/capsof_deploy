@@ -7,6 +7,8 @@ import com.upn.sistemas.capsof_project.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	
+
 	public User findByUserEmail(String userEmail);
+
+	public User findByUserDni(String userDni);
 }
