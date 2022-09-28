@@ -20,8 +20,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/swagger-ui.html", "/user/addUser").permitAll().anyRequest()
-				.authenticated().and().cors().configurationSource(corsConfigurationSource());
+		http.authorizeRequests().antMatchers("/user/addUser", "oauth/token").permitAll().anyRequest().authenticated()
+				.and().cors().configurationSource(corsConfigurationSource());
 	}
 
 	@Bean
