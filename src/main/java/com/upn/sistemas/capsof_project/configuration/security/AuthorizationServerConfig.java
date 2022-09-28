@@ -37,12 +37,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.applyPermitDefaultValues();
 		config.addAllowedHeader("access-control-allow-origin");
-		// source.registerCorsConfiguration("/oauth/token", config);
+		config.setAllowedOrigins(Arrays.asList("*"));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT"));
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);
+
 		CorsFilter filter = new CorsFilter(source);
 		security.addTokenEndpointAuthenticationFilter(filter);
 	}
