@@ -34,6 +34,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Qualifier("authenticationManager")
 	private AuthenticationManager authenticationManager;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
@@ -46,7 +47,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		config.setAllowedMethods(Arrays.asList("*"));
 		config.setExposedHeaders(Arrays.asList("content-length"));
 		config.setMaxAge(3600L);
-		// config.addAllowedHeader("access-control-allow-origin");
+		config.addAllowedHeader("access-control-allow-origin");
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		// source.registerCorsConfiguration("/oauth/token", config);
