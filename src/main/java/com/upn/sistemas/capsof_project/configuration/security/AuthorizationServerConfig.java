@@ -39,10 +39,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 		CorsConfiguration config = new CorsConfiguration();
 		config.applyPermitDefaultValues();
-		config.setAllowCredentials(true);
-		config.setAllowedOrigins(Arrays.asList("*"));
-		config.setAllowedHeaders(Arrays.asList("*"));
-		config.setAllowedMethods(Arrays.asList("*"));
+//		config.setAllowCredentials(true);
+//		config.setAllowedOrigins(Arrays.asList("*"));
+//		config.setAllowedHeaders(Arrays.asList("*"));
+//		config.setAllowedMethods(Arrays.asList("*"));
 		// config.setExposedHeaders(Arrays.asList("content-length"));
 		// config.setMaxAge(3600L);
 		config.addAllowedHeader("access-control-allow-origin");
