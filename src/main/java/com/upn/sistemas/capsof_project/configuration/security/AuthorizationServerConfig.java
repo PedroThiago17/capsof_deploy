@@ -40,6 +40,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		CorsConfiguration config = new CorsConfiguration();
 		config.applyPermitDefaultValues();
 		config.addAllowedHeader("access-control-allow-origin");
+		config.setAllowedOrigins(Arrays.asList("https://frontreact-9adf1.web.app"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		// source.registerCorsConfiguration("/oauth/token", config);
