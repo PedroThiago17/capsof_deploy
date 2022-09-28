@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 @SuppressWarnings("deprecation")
 @Configuration
@@ -39,8 +40,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().anyRequest().authenticated().and().csrf().disable().sessionManagement()
+
+		http.addFilterBefore(corsFilter(), SessionManagementFilter.class).exceptionHandling().and().authorizeRequests()
+				.anyRequest().authenticated().and().csrf().disable().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		;
 	}
 
+	SimpleCORSFilter corsFilter() {
+		SimpleCORSFilter filter = new SimpleCORSFilter();
+		return filter;
+	}
 }
