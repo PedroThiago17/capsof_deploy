@@ -61,7 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.build();
 	}*/
 	
-	@Bean
+	/*@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("https://frontreact-9adf1.web.app/"));
@@ -70,13 +70,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-
-	@Bean
+*/
+	/*@Bean
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
-			// ...
+			.oauth2Client().and()
 			.cors(cors -> cors.disable());
 		return http.build();
-	}
+	}*/
 	
 }
