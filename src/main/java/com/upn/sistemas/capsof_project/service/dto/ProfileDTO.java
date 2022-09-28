@@ -8,8 +8,10 @@ public class ProfileDTO implements Serializable {
 	private static final long serialVersionUID = -7482298080237982097L;
 
 	private Long profileId;
-	private String descripcionProfile;
-	private List<SkillDTO> skillDTOs;
+	private Long userId;
+	private String descriptionProfile;
+	private List<SkillDTO> skillsDTO;
+	private List<SkillDTO> skillsDeleteDTO;
 	private ParamDomainDTO domTpPerfil;
 	private ParamDomainDTO domExpe;
 
@@ -21,20 +23,36 @@ public class ProfileDTO implements Serializable {
 		this.profileId = profileId;
 	}
 
-	public String getDescripcionProfile() {
-		return descripcionProfile;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setDescripcionProfile(String descripcionProfile) {
-		this.descripcionProfile = descripcionProfile;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public List<SkillDTO> getSkillDTOs() {
-		return skillDTOs;
+	public String getDescriptionProfile() {
+		return descriptionProfile;
 	}
 
-	public void setSkillDTOs(List<SkillDTO> skillDTOs) {
-		this.skillDTOs = skillDTOs;
+	public void setDescriptionProfile(String descriptionProfile) {
+		this.descriptionProfile = descriptionProfile;
+	}
+
+	public List<SkillDTO> getSkillsDTO() {
+		return skillsDTO;
+	}
+
+	public void setSkillsDTO(List<SkillDTO> skillsDTO) {
+		this.skillsDTO = skillsDTO;
+	}
+
+	public List<SkillDTO> getSkillsDeleteDTO() {
+		return skillsDeleteDTO;
+	}
+
+	public void setSkillsDeleteDTO(List<SkillDTO> skillsDeleteDTO) {
+		this.skillsDeleteDTO = skillsDeleteDTO;
 	}
 
 	public ParamDomainDTO getDomTpPerfil() {

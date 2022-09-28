@@ -6,6 +6,7 @@ public class Constants {
 	public static final String TRUE_VALUE = "TRUE";
 	public static final String FALSE_VALUE = "FALSE";
 	public static final Long ROLE_USER_VALUE = (long) 2;
+	public static final String OK = "OK";
 	/* End values */
 
 	/* Strings */
@@ -36,5 +37,7 @@ public class Constants {
 
 	/* Profile Controller */
 	public static final String PROFILE_API_OP_POST = "Save a Profile to database";
+	public static final String PROFILE_API_OP_PUT = "Update a Profile to database";
+	public static final String PROFILE_API_OP_DELETE = "Delete a Profile to database";
 	/* End Profile Controller */
 }

@@ -111,6 +111,11 @@
 			<version>${swagger.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
 		<!-- END SWAGGER 2 support -->
 	</dependencies>
 
