@@ -29,5 +29,4 @@ public class SimpleCORSFilter implements Filter {
 		chain.doFilter(req, res);
 
 	}
-
 }
