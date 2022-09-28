@@ -52,17 +52,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		;
 	}
 	
-	@Bean
+	/*@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors(Customizer.withDefaults()) // by default uses a Bean by the name of corsConfigurationSource
 				.authorizeRequests(auth -> auth.anyRequest().authenticated()).httpBasic(Customizer.withDefaults())
 				.build();
-	}
+	}*/
 	
 	@Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://frontreact-9adf1.web.app/"));
+        configuration.setAllowedOrigins(Arrays.asList("https://frontreact-9adf1.web.app"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
