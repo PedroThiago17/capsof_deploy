@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,12 +40,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 		CorsConfiguration config = new CorsConfiguration();
 		config.applyPermitDefaultValues();
-		config.addAllowedHeader("access-control-allow-origin");
-		config.setAllowedOrigins(Arrays.asList("https://frontreact-9adf1.web.app"));
+		config.setAllowCredentials(true);
+		config.setAllowedOrigins(Arrays.asList("*"));
+		config.setAllowedHeaders(Arrays.asList("*"));
+		config.setAllowedMethods(Arrays.asList("*"));
+		config.setExposedHeaders(Arrays.asList("content-length"));
+		config.setMaxAge(3600L);
+		// config.addAllowedHeader("access-control-allow-origin");
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		// source.registerCorsConfiguration("/oauth/token", config);
 		source.registerCorsConfiguration("/**", config);
+
+		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+		bean.setOrder(0);
 
 		CorsFilter filter = new CorsFilter(source);
 		security.addTokenEndpointAuthenticationFilter(filter);
