@@ -35,6 +35,8 @@ public class ParamDomainServiceImpl implements IParamDomainService {
 					domainDTO = maper.map(paramDomain, ParamDomainDTO.class);
 					result.add(domainDTO);
 				}
+
+				return result;
 			}
 		}
 
