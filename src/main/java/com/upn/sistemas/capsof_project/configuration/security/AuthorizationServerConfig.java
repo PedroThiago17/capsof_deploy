@@ -41,7 +41,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		config.applyPermitDefaultValues();
 		config.addAllowedHeader("access-control-allow-origin");
 		config.setAllowedOrigins(Arrays.asList("*"));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT"));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);
