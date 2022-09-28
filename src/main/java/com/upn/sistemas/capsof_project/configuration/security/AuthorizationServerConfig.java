@@ -15,9 +15,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableAuthorizationServer
@@ -37,22 +34,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
 
-		CorsConfiguration config = new CorsConfiguration();
-		config.applyPermitDefaultValues();
-//		config.setAllowCredentials(true);
-		config.setAllowedOrigins(Arrays.asList("*"));
-//		config.setAllowedHeaders(Arrays.asList("*"));
-//		config.setAllowedMethods(Arrays.asList("*"));
-		// config.setExposedHeaders(Arrays.asList("content-length"));
-		// config.setMaxAge(3600L);
-		config.addAllowedHeader("access-control-allow-origin");
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		// source.registerCorsConfiguration("/oauth/token", config);
-		source.registerCorsConfiguration("/**", config);
-
-		CorsFilter filter = new CorsFilter(source);
-		security.addTokenEndpointAuthenticationFilter(filter);
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.applyPermitDefaultValues();
+//		config.addAllowedHeader("access-control-allow-origin");
+//
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		// source.registerCorsConfiguration("/oauth/token", config);
+//		source.registerCorsConfiguration("/**", config);
+//
+//		CorsFilter filter = new CorsFilter(source);
+//		security.addTokenEndpointAuthenticationFilter(filter);
 	}
 
 	@Override
