@@ -82,7 +82,7 @@ public class UserController {
 
 	}
 
-	@CrossOrigin(origins = "https://frontreact-9adf1.web.app/")
+	//@CrossOrigin(origins = "https://frontreact-9adf1.web.app/")
 	@GetMapping(value = "/getUserById/{userId}")
 	@ApiOperation(value = Constants.USER_TP_API_OP_FIND)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
