@@ -40,10 +40,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		CorsConfiguration config = new CorsConfiguration();
 		config.applyPermitDefaultValues();
 		config.addAllowedHeader("access-control-allow-origin");
-		config.setAllowedOrigins(Arrays.asList("*"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/oauth/token", config);
+		source.registerCorsConfiguration("/user/**", config);
 
 		CorsFilter filter = new CorsFilter(source);
 		security.addTokenEndpointAuthenticationFilter(filter);
