@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +29,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("user")
 @Api(tags = "UserApi", value = "/user")
@@ -83,7 +81,6 @@ public class UserController {
 
 	}
 
-	@CrossOrigin("https://frontreact-9adf1.web.app")
 	@GetMapping(value = "/getUserById/{userId}")
 	@ApiOperation(value = Constants.USER_TP_API_OP_FIND)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
