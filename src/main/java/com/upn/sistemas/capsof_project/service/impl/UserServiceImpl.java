@@ -126,6 +126,7 @@ public class UserServiceImpl implements IUserService {
 			userModel.setUserEmail(userUpdate.getUserEmail());
 			userModel.setUserPhone(userUpdate.getUserPhone());
 			userModel.setUpdateDate(calendar.getTime());
+			userModel.setUserDni(userUpdate.getDniUser());
 			userModel = userRepository.save(userModel);
 
 			UserDTO userDTO = this.maper.map(userModel, UserDTO.class);

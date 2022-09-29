@@ -12,6 +12,7 @@ public class UserUpdateDTO implements Serializable {
 	private String userDesc;
 	private String userEmail;
 	private String userPhone;
+	private String dniUser;
 
 	public String getUserNames() {
 		return userNames;
@@ -59,5 +60,13 @@ public class UserUpdateDTO implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getDniUser() {
+		return dniUser;
+	}
+
+	public void setDniUser(String dniUser) {
+		this.dniUser = dniUser;
 	}
 }
