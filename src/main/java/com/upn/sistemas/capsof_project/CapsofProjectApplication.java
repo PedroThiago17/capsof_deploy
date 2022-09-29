@@ -9,4 +9,5 @@ public class CapsofProjectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CapsofProjectApplication.class, args);
 	}
+
 }
