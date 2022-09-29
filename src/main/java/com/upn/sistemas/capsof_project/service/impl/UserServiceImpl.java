@@ -2,6 +2,7 @@ package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -9,19 +10,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.upn.sistemas.capsof_project.exceptions.CapsofException;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.model.UserRoles;
 import com.upn.sistemas.capsof_project.model.UserRolesPK;
@@ -31,26 +25,23 @@ import com.upn.sistemas.capsof_project.model.repository.UserRolesRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserTypeRepository;
 import com.upn.sistemas.capsof_project.service.IUserService;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
+import com.upn.sistemas.capsof_project.service.dto.UserLoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserUpdateDTO;
 import com.upn.sistemas.capsof_project.utils.Constants;
 
 @Service("userService")
 @Transactional
-public class UserServiceImpl implements IUserService, UserDetailsService {
+public class UserServiceImpl implements IUserService {
 
 	private ModelMapper maper = new ModelMapper();
 	private Calendar calendar = Calendar.getInstance();
-	private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
 	private UserTypeRepository userTypeRepository;
-
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private UserRolesRepository userRolesRepository;
@@ -74,25 +65,8 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	}
 
 	@Override
-	public User findByUserEmail(String userEmail) {
+	public Optional<User> findByUserEmail(String userEmail) {
 		return userRepository.findByUserEmail(userEmail);
-	}
-
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUserEmail(username);
-
-		if (Objects.isNull(user)) {
-			log.error("User not found in the database");
-			throw new UsernameNotFoundException("User not found in the database");
-		}
-
-		List<GrantedAuthority> authorities = user.getUserRolesList().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getUserType().getUserTpDesc()))
-				.peek(auth -> log.info("Role: " + auth.getAuthority())).collect(Collectors.toList());
-
-		return new org.springframework.security.core.userdetails.User(user.getUserEmail(), user.getUserPass(), true,
-				true, true, true, authorities);
 	}
 
 	@Override
@@ -100,9 +74,9 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 		final Optional<UserType> defaultRole = userTypeRepository.findById(Constants.ROLE_USER_VALUE);
 
 		try {
-			if (Objects.isNull(findByUserEmail(userSave.getUserEmail()))) {
+			if (!(findByUserEmail(userSave.getUserEmail()).isPresent())) {
 				User userModel = this.maper.map(userSave, User.class);
-				userModel.setUserPass(passwordEncoder.encode(userSave.getUserPass()));
+				userModel.setUserPass(Base64.getEncoder().encodeToString(userSave.getUserPass().getBytes()));
 				userModel.setCreationDate(calendar.getTime());
 				userModel.setUserState(Constants.TRUE_VALUE.trim());
 				userModel = userRepository.save(userModel);
@@ -180,4 +154,30 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 			return "The UserType is no registred in database";
 		}
 	}
+
+	@Override
+	public UserDTO login(UserLoginDTO userLoginDTO) throws CapsofException {
+
+		UserDTO userDTO = new UserDTO();
+
+		Optional<User> user = userRepository.findByUserEmail(userLoginDTO.getEmail());
+
+		if (user.isPresent()) {
+
+			Optional<User> userAndPassword = userRepository.findByUserEmailAndUserPass(userLoginDTO.getEmail(),
+					userLoginDTO.getPassword());
+
+			if (userAndPassword.isPresent()) {
+				userDTO = this.maper.map(userAndPassword.get(), UserDTO.class);
+			} else {
+				throw new CapsofException("BAD_CREDENTIALS", 400, "Credentials incorrect");
+			}
+
+		} else {
+			throw new CapsofException("EMAIL_NOT_FOUND", 404, "Email not found");
+		}
+
+		return userDTO;
+	}
+
 }

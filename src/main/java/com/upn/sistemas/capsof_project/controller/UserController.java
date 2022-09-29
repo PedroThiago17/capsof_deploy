@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.upn.sistemas.capsof_project.service.IUserService;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
+import com.upn.sistemas.capsof_project.service.dto.UserLoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserUpdateDTO;
 import com.upn.sistemas.capsof_project.utils.Constants;
@@ -31,7 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@CrossOrigin("https://frontreact-9adf1.web.app")
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("user")
 @Api(tags = "UserApi", value = "/user")
 public class UserController {
@@ -80,7 +81,6 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 					.body(e.getLocalizedMessage());
 		}
-
 	}
 
 	@GetMapping(value = "/getUserById/{userId}")
@@ -98,7 +98,6 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 					.body(e.getLocalizedMessage());
 		}
-
 	}
 
 	@PutMapping(value = "/updateUser")
@@ -116,7 +115,6 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 					.body(e.getLocalizedMessage());
 		}
-
 	}
 
 	@PutMapping(value = "/deleteUser/{userId}")
@@ -134,6 +132,23 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 					.body(e.getLocalizedMessage());
 		}
-
 	}
+	
+	@PostMapping(value = "/login")
+	@ApiOperation(value = Constants.USER_API_OP_DELETE)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO) {
+		try {
+			final UserDTO response = this.userService.login(userLoginDTO);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+					.body(e.getLocalizedMessage());
+		}
+	}
+	
 }
