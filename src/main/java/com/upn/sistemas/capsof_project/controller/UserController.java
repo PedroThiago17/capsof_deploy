@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RequestMapping("user")
 @Api(tags = "UserApi", value = "/user")
 public class UserController {
@@ -133,7 +133,7 @@ public class UserController {
 					.body(e.getLocalizedMessage());
 		}
 	}
-	
+
 	@PostMapping(value = "/login")
 	@ApiOperation(value = Constants.USER_API_OP_DELETE)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
@@ -150,5 +150,5 @@ public class UserController {
 					.body(e.getLocalizedMessage());
 		}
 	}
-	
+
 }
