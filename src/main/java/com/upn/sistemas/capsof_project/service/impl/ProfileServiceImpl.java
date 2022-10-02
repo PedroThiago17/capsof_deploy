@@ -158,6 +158,7 @@ public class ProfileServiceImpl implements IProfileService {
 			setDataExperienceAndDomProfile(profileSaveDTO, profileDTO, profile.get());
 			profile.get().setUpdateDate(calendar.getTime());
 			Profile profileSave = profileRepository.save(profile.get());
+			skillsProfileRepository.deleteByProfile_ProfileId(profileSave.getProfileId());
 			List<SkillDTO> skillsAddDTO = new ArrayList<>();
 			setSkillsForProfessional(profileSaveDTO, profileSave, skillsAddDTO);
 			List<SkillDTO> skillsDeleteDTO = new ArrayList<>();
