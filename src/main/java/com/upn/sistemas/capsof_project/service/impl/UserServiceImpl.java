@@ -16,14 +16,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.upn.sistemas.capsof_project.exceptions.CapsofException;
+import com.upn.sistemas.capsof_project.model.Company;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.model.UserRoles;
 import com.upn.sistemas.capsof_project.model.UserRolesPK;
 import com.upn.sistemas.capsof_project.model.UserType;
+import com.upn.sistemas.capsof_project.model.repository.CompanyRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRolesRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserTypeRepository;
 import com.upn.sistemas.capsof_project.service.IUserService;
+import com.upn.sistemas.capsof_project.service.dto.LoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserLoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
@@ -45,6 +48,9 @@ public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private UserRolesRepository userRolesRepository;
+
+	@Autowired
+	private CompanyRepository companyRepository;
 
 	@Override
 	public List<UserDTO> findAll() {
@@ -157,28 +163,53 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public UserDTO login(UserLoginDTO userLoginDTO) throws CapsofException {
+	public LoginDTO login(UserLoginDTO userLoginDTO) throws CapsofException {
 
-		UserDTO userDTO = new UserDTO();
+		LoginDTO loginDTO = new LoginDTO();
 
-		Optional<User> user = userRepository.findByUserEmail(userLoginDTO.getEmail());
+		if (Objects.nonNull(userLoginDTO.getType()) && "USER".equals(userLoginDTO.getType())) {
+			Optional<User> user = userRepository.findByUserEmail(userLoginDTO.getEmail());
 
-		if (user.isPresent()) {
+			if (user.isPresent()) {
 
-			Optional<User> userAndPassword = userRepository.findByUserEmailAndUserPass(userLoginDTO.getEmail(),
-					userLoginDTO.getPassword());
+				Optional<User> userAndPassword = userRepository.findByUserEmailAndUserPass(userLoginDTO.getEmail(),
+						userLoginDTO.getPassword());
 
-			if (userAndPassword.isPresent()) {
-				userDTO = this.maper.map(userAndPassword.get(), UserDTO.class);
+				if (userAndPassword.isPresent()) {
+					loginDTO = this.maper.map(userAndPassword.get(), LoginDTO.class);
+				} else {
+					throw new CapsofException("BAD_CREDENTIALS", 400, "Credentials incorrect");
+				}
+
 			} else {
-				throw new CapsofException("BAD_CREDENTIALS", 400, "Credentials incorrect");
+				throw new CapsofException("EMAIL_NOT_FOUND", 404, "Email not found");
+			}
+		} else if (Objects.nonNull(userLoginDTO.getType()) && "COMPANY".equals(userLoginDTO.getType())) {
+
+			Optional<Company> company = companyRepository.findByCompanyEmail(userLoginDTO.getEmail());
+
+			if (company.isPresent()) {
+				Optional<Company> userPassCompany = companyRepository
+						.findByCompanyEmailAndCompanyPass(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+
+				if (userPassCompany.isPresent()) {
+					loginDTO = this.maper.map(userPassCompany.get(), LoginDTO.class);
+					loginDTO.setUserEmail(userPassCompany.get().getCompanyEmail());
+					loginDTO.setUserId(userPassCompany.get().getCompanyId());
+					loginDTO.setUserNames(userPassCompany.get().getCompanyName());
+					loginDTO.setUserRuc(userPassCompany.get().getCompanyRuc());
+				} else {
+					throw new CapsofException("BAD_CREDENTIALS", 400, "Credentials incorrect");
+				}
+			} else {
+				throw new CapsofException("EMAIL_NOT_FOUND", 404, "Email not found");
 			}
 
 		} else {
-			throw new CapsofException("EMAIL_NOT_FOUND", 404, "Email not found");
+			throw new CapsofException("ACCESS_DENIED_FOR_USER", 401, "Access denied");
 		}
 
-		return userDTO;
+		return loginDTO;
 	}
 
 }

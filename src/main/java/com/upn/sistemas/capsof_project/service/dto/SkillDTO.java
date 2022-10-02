@@ -10,6 +10,7 @@ public class SkillDTO implements Serializable {
 	private String skillDescription;
 	private Integer levelSkill;
 	private String typeSkill;
+	private String skillRequired;
 
 	public Long getSkillId() {
 		return skillId;
@@ -41,6 +42,14 @@ public class SkillDTO implements Serializable {
 
 	public void setTypeSkill(String typeSkill) {
 		this.typeSkill = typeSkill;
+	}
+
+	public String getSkillRequired() {
+		return skillRequired;
+	}
+
+	public void setSkillRequired(String skillRequired) {
+		this.skillRequired = skillRequired;
 	}
 
 }

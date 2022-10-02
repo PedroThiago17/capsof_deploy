@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upn.sistemas.capsof_project.service.IUserService;
+import com.upn.sistemas.capsof_project.service.dto.LoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserLoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
@@ -143,7 +144,7 @@ public class UserController {
 			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
 	public ResponseEntity<Object> login(@RequestBody UserLoginDTO userLoginDTO) {
 		try {
-			final UserDTO response = this.userService.login(userLoginDTO);
+			final LoginDTO response = this.userService.login(userLoginDTO);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)

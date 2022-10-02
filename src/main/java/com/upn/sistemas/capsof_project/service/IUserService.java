@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.upn.sistemas.capsof_project.exceptions.CapsofException;
 import com.upn.sistemas.capsof_project.model.User;
+import com.upn.sistemas.capsof_project.service.dto.LoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserLoginDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserSaveDTO;
@@ -24,6 +25,6 @@ public interface IUserService {
 
 	public String deleteUser(Long idUser);
 	
-	public UserDTO login(UserLoginDTO userLoginDTO) throws CapsofException;
+	public LoginDTO login(UserLoginDTO userLoginDTO) throws CapsofException;
 
 }
