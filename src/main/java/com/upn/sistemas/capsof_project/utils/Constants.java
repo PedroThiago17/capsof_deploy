@@ -40,4 +40,9 @@ public class Constants {
 	public static final String PROFILE_API_OP_PUT = "Update a Profile to database";
 	public static final String PROFILE_API_OP_DELETE = "Delete a Profile to database";
 	/* End Profile Controller */
+	
+	/* Company Controller */
+	public static final String COMPANY_API_OP_GET = "Get all company from database";
+	public static final String COMPANY_API_OP_GET_BY_ID = "Get company by id from database";
+	
 }

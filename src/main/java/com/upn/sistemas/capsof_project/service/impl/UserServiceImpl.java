@@ -167,7 +167,7 @@ public class UserServiceImpl implements IUserService {
 
 		LoginDTO loginDTO = new LoginDTO();
 
-		if (Objects.nonNull(userLoginDTO.getType()) && "USER".equals(userLoginDTO.getType())) {
+		if (Objects.nonNull(userLoginDTO.getType()) && "user".equals(userLoginDTO.getType())) {
 			Optional<User> user = userRepository.findByUserEmail(userLoginDTO.getEmail());
 
 			if (user.isPresent()) {
@@ -184,7 +184,7 @@ public class UserServiceImpl implements IUserService {
 			} else {
 				throw new CapsofException("EMAIL_NOT_FOUND", 404, "Email not found");
 			}
-		} else if (Objects.nonNull(userLoginDTO.getType()) && "COMPANY".equals(userLoginDTO.getType())) {
+		} else if (Objects.nonNull(userLoginDTO.getType()) && "enterprise".equals(userLoginDTO.getType())) {
 
 			Optional<Company> company = companyRepository.findByCompanyEmail(userLoginDTO.getEmail());
 
