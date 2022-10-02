@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.upn.sistemas.capsof_project.exceptions.BadRequestException;
 import com.upn.sistemas.capsof_project.exceptions.CapsofException;
@@ -30,9 +33,11 @@ import com.upn.sistemas.capsof_project.service.dto.CompanyOfferDTO;
 import com.upn.sistemas.capsof_project.service.dto.CompanyOfferSaveDTO;
 import com.upn.sistemas.capsof_project.service.dto.ParamDomainDTO;
 import com.upn.sistemas.capsof_project.service.dto.SkillDTO;
+import com.upn.sistemas.capsof_project.utils.Constants;
 import com.upn.sistemas.capsof_project.utils.ConstantsError;
 
 @Service
+@Transactional
 public class CompanyOfferServiceImpl implements ICompanyOfferService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyOfferServiceImpl.class);
@@ -146,17 +151,99 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 
 	@Override
 	public CompanyOfferDTO updateCompanyOffer(CompanyOfferSaveDTO companyOfferSaveDTO) throws CapsofException {
-		return null;
+
+		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
+		Optional<CompanyOffer> companyOffer = companyOfferRepository
+				.findByOfferId(companyOfferSaveDTO.getCompanyOfferId());
+
+		if (companyOffer.isPresent()) {
+
+			companyOfferDTO = this.maper.map(companyOfferSaveDTO, CompanyOfferDTO.class);
+			setDataExperienceAndDomCompanyOffer(companyOfferSaveDTO, companyOfferDTO, companyOffer.get());
+			companyOffer.get().setOfferTitle(companyOfferSaveDTO.getOfferTitle());
+			companyOffer.get().setOfferDesc(companyOfferSaveDTO.getOfferDescription());
+			companyOffer.get().setQuantVacants(companyOfferSaveDTO.getQuantityVacants());
+			companyOffer.get().setOfferApps(companyOfferSaveDTO.getApplicationsOffers());
+			companyOffer.get().setExpDate(companyOfferSaveDTO.getDateExpiry());
+			companyOffer.get().setOfferState(companyOfferSaveDTO.getStatusOffer());
+			companyOffer.get().setUpdateDate(calendar.getTime());
+			Optional<Company> company = companyRepository.findById(companyOfferSaveDTO.getCompanyId());
+			if (company.isPresent()) {
+				companyOffer.get().setCompanyId(company.get());
+			}
+			CompanyOffer companyOfferSave = companyOfferRepository.save(companyOffer.get());
+			skillsCompanyOfferRepository.deleteByCompanyOffer_OfferId(companyOfferSave.getOfferId());
+			List<SkillDTO> skillsAddDTO = new ArrayList<>();
+			setSkillsForCompanyOffer(companyOfferSaveDTO, companyOfferSave, skillsAddDTO);
+			companyOfferDTO.setSkillsDTO(skillsAddDTO);
+		} else {
+			throw new CapsofException(String.valueOf(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND.value(),
+					StringUtils.join("Company Offer", StringUtils.SPACE, StringUtils.SPACE, "not found"));
+		}
+
+		return companyOfferDTO;
+
 	}
 
 	@Override
 	public String deleteCompanyOffer(Long companyOfferId) throws CapsofException {
-		return null;
+
+		Optional<CompanyOffer> companyOffer = companyOfferRepository.findByOfferId(companyOfferId);
+
+		if (companyOffer.isPresent()) {
+			companyOfferRepository.delete(companyOffer.get());
+		} else {
+			throw new CapsofException(String.valueOf(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND.value(), StringUtils
+					.join("Company Offer", StringUtils.SPACE, companyOfferId, StringUtils.SPACE, "not found"));
+		}
+
+		return Constants.OK;
 	}
 
 	@Override
 	public List<CompanyOfferDTO> findCompanyOffersByCompanyId(Long companyId) throws CapsofException {
-		return null;
+
+		List<CompanyOfferDTO> companyOfferDTOs = new ArrayList<>();
+
+		List<CompanyOffer> companyOffers = companyOfferRepository.findByCompanyId_CompanyId(companyId);
+		SkillDTO skillDTO = new SkillDTO();
+		List<SkillDTO> skillDTOs = new ArrayList<>();
+
+		if (!companyOffers.isEmpty()) {
+			CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
+			for (CompanyOffer companyOffer : companyOffers) {
+				companyOfferDTO = new CompanyOfferDTO();
+				companyOfferDTO.setOfferTitle(companyOffer.getOfferTitle());
+				companyOfferDTO.setCompanyOfferId(companyOffer.getOfferId());
+				companyOfferDTO.setOfferDescription(companyOffer.getOfferDesc());
+				companyOfferDTO.setQuantityVacants(companyOffer.getQuantVacants());
+				companyOfferDTO.setApplicationsOffers(companyOffer.getOfferApps());
+				companyOfferDTO.setDateExpiry(companyOffer.getExpDate());
+				companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
+				Optional<Company> company = companyRepository.findById(companyOffer.getCompanyId().getCompanyId());
+				if (company.isPresent()) {
+					companyOfferDTO.setCompanyId(company.get().getCompanyId());
+				}
+				companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
+				companyOfferDTO.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
+
+				if (Objects.nonNull(companyOffer.getOfferSkillsList())
+						&& !companyOffer.getOfferSkillsList().isEmpty()) {
+					skillDTOs = new ArrayList<>();
+					for (OfferSkills offerSkills : companyOffer.getOfferSkillsList()) {
+						skillDTO = new SkillDTO();
+						skillDTO.setLevelSkill(offerSkills.getSkillNivel());
+						skillDTO.setSkillDescription(offerSkills.getSkill().getSkillDesc());
+						skillDTO.setSkillId(offerSkills.getSkill().getSkillId());
+						skillDTOs.add(skillDTO);
+					}
+					companyOfferDTO.setSkillsDTO(skillDTOs);
+				}
+				companyOfferDTOs.add(companyOfferDTO);
+			}
+		}
+
+		return companyOfferDTOs;
 	}
 
 }

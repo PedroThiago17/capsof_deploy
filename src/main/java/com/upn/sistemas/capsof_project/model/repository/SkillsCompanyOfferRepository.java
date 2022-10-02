@@ -7,5 +7,7 @@ import com.upn.sistemas.capsof_project.model.OfferSkills;
 
 @Repository
 public interface SkillsCompanyOfferRepository extends JpaRepository<OfferSkills, Long> {
+	
+	void deleteByCompanyOffer_OfferId(Long offerId);
 
 }
