@@ -32,7 +32,7 @@ public class SkillController {
 	ISkillService skillService;
 
 	@GetMapping(value = "/search")
-	@ApiOperation(value = Constants.PROFILE_API_OP_DELETE)
+	@ApiOperation(value = Constants.SKILL_API_OP_GET_ALL)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
@@ -44,7 +44,7 @@ public class SkillController {
 	}
 
 	@GetMapping(value = "/search/{type}")
-	@ApiOperation(value = Constants.PROFILE_API_OP_DELETE)
+	@ApiOperation(value = Constants.SKILL_API_OP_GET_BY_TYPE)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),

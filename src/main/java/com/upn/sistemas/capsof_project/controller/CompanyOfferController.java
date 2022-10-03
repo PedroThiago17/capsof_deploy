@@ -10,9 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +38,7 @@ public class CompanyOfferController {
 	private ICompanyOfferService companyOfferService;
 
 	@PostMapping(value = "/addCompanyOffer")
-	@ApiOperation(value = Constants.PROFILE_API_OP_POST)
+	@ApiOperation(value = Constants.COMP_OFFER_API_OP_POST)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
@@ -52,7 +51,7 @@ public class CompanyOfferController {
 	}
 
 	@PutMapping(value = "/updateCompanyOffer")
-	@ApiOperation(value = Constants.PROFILE_API_OP_POST)
+	@ApiOperation(value = Constants.COMP_OFFER_API_OP_PUT)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
@@ -65,7 +64,7 @@ public class CompanyOfferController {
 	}
 
 	@DeleteMapping(value = "/deleteCompanyOffer/{companyOfferId}")
-	@ApiOperation(value = Constants.PROFILE_API_OP_POST)
+	@ApiOperation(value = Constants.COMP_OFFER_API_OP_DELETE)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
@@ -77,7 +76,7 @@ public class CompanyOfferController {
 	}
 
 	@GetMapping(value = "/findCompanyOffer/company/{companyId}")
-	@ApiOperation(value = Constants.PROFILE_API_OP_POST)
+	@ApiOperation(value = Constants.COMP_OFFER_API_OP_GET)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),

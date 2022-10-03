@@ -33,6 +33,8 @@ public class Constants {
 	public static final String USER_API_OP_POST = "Save a User to database";
 	public static final String USER_API_OP_PUT = "Update a User into database";
 	public static final String USER_API_OP_DELETE = "Delete a User from database";
+	public static final String USER_API_OP_FIND_BY_ID = "Find a User by ID from database";
+	public static final String USER_API_OP_LOGIN = "Login in the app with credencials";
 	/* End User Controller */
 
 	/* Profile Controller */
@@ -40,9 +42,26 @@ public class Constants {
 	public static final String PROFILE_API_OP_PUT = "Update a Profile to database";
 	public static final String PROFILE_API_OP_DELETE = "Delete a Profile to database";
 	/* End Profile Controller */
-	
+
 	/* Company Controller */
 	public static final String COMPANY_API_OP_GET = "Get all company from database";
 	public static final String COMPANY_API_OP_GET_BY_ID = "Get company by id from database";
-	
+	/* End Company Controller */
+
+	/* CompanyOffer Controller */
+	public static final String COMP_OFFER_API_OP_GET = "Get all company offer by company id from database";
+	public static final String COMP_OFFER_API_OP_POST = "Save a company offer into database";
+	public static final String COMP_OFFER_API_OP_DELETE = "Delete a company offer by id from database";
+	public static final String COMP_OFFER_API_OP_PUT = "Update a company offer by id from database";
+	/* End CompanyOffer Controller */
+
+	/* Domain Controller */
+	public static final String DOMAIN_API_OP_GET = "Get all domains by cod of domain";
+	/* End Domain Controller */
+
+	/* Skill Controller */
+	public static final String SKILL_API_OP_GET_ALL = "Get all skills from database";
+	public static final String SKILL_API_OP_GET_BY_TYPE = "Get all skills by type from database";
+	/* End Skill Controller */
+
 }

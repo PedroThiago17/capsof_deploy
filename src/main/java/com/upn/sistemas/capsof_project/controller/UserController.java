@@ -85,7 +85,7 @@ public class UserController {
 	}
 
 	@GetMapping(value = "/getUserById/{userId}")
-	@ApiOperation(value = Constants.USER_TP_API_OP_FIND)
+	@ApiOperation(value = Constants.USER_API_OP_FIND_BY_ID)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
@@ -136,7 +136,7 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/login")
-	@ApiOperation(value = Constants.USER_API_OP_DELETE)
+	@ApiOperation(value = Constants.USER_API_OP_LOGIN)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),

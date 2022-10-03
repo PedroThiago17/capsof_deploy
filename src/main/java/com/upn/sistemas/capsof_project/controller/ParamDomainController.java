@@ -32,7 +32,7 @@ public class ParamDomainController {
 	private IParamDomainService paramDomainService;
 
 	@GetMapping(value = "/findByCode")
-	@ApiOperation(value = Constants.PROFILE_API_OP_POST)
+	@ApiOperation(value = Constants.DOMAIN_API_OP_GET)
 	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
 			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
 			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
