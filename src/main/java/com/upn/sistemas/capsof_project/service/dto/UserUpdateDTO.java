@@ -12,7 +12,7 @@ public class UserUpdateDTO implements Serializable {
 	private String userDesc;
 	private String userEmail;
 	private String userPhone;
-	private String dniUser;
+	private String userDni;
 
 	public String getUserNames() {
 		return userNames;
@@ -62,11 +62,12 @@ public class UserUpdateDTO implements Serializable {
 		this.userId = userId;
 	}
 
-	public String getDniUser() {
-		return dniUser;
+	public String getUserDni() {
+		return userDni;
 	}
 
-	public void setDniUser(String dniUser) {
-		this.dniUser = dniUser;
+	public void setUserDni(String userDni) {
+		this.userDni = userDni;
 	}
+
 }
