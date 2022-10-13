@@ -46,6 +46,9 @@ public class Constants {
 	/* Company Controller */
 	public static final String COMPANY_API_OP_GET = "Get all company from database";
 	public static final String COMPANY_API_OP_GET_BY_ID = "Get company by id from database";
+	public static final String COMPANY_API_OP_SAVE = "Save company in database";
+	public static final String COMPANY_API_OP_UPDATE = "Update company in database";
+	public static final String COMPANY_API_OP_DELETE = "Delete company in database";
 	/* End Company Controller */
 
 	/* CompanyOffer Controller */

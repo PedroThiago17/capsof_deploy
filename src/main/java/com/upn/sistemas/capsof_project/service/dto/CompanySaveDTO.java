@@ -1,22 +1,13 @@
 package com.upn.sistemas.capsof_project.service.dto;
 
-public class CompanyDTO {
+public class CompanySaveDTO {
 
-	private Long companyId;
 	private String companyRuc;
 	private String companyCode;
+	private String companyPass;
 	private String companyName;
 	private String companyState;
 	private String companyEmail;
-	private String responseStatus;
-
-	public Long getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
-	}
 
 	public String getCompanyRuc() {
 		return companyRuc;
@@ -32,6 +23,14 @@ public class CompanyDTO {
 
 	public void setCompanyCode(String companyCode) {
 		this.companyCode = companyCode;
+	}
+
+	public String getCompanyPass() {
+		return companyPass;
+	}
+
+	public void setCompanyPass(String companyPass) {
+		this.companyPass = companyPass;
 	}
 
 	public String getCompanyName() {
@@ -56,14 +55,6 @@ public class CompanyDTO {
 
 	public void setCompanyEmail(String companyEmail) {
 		this.companyEmail = companyEmail;
-	}
-
-	public String getResponseStatus() {
-		return responseStatus;
-	}
-
-	public void setResponseStatus(String responseStatus) {
-		this.responseStatus = responseStatus;
 	}
 
 }
