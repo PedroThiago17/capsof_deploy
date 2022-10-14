@@ -23,12 +23,16 @@ import com.upn.sistemas.capsof_project.model.OfferSkills;
 import com.upn.sistemas.capsof_project.model.OfferSkillsPK;
 import com.upn.sistemas.capsof_project.model.ParamDomain;
 import com.upn.sistemas.capsof_project.model.Skill;
+import com.upn.sistemas.capsof_project.model.User;
+import com.upn.sistemas.capsof_project.model.UserProfiles;
 import com.upn.sistemas.capsof_project.model.repository.CompanyOfferRepository;
 import com.upn.sistemas.capsof_project.model.repository.CompanyRepository;
 import com.upn.sistemas.capsof_project.model.repository.ParamDomainRepository;
 import com.upn.sistemas.capsof_project.model.repository.SkillRepository;
 import com.upn.sistemas.capsof_project.model.repository.SkillsCompanyOfferRepository;
+import com.upn.sistemas.capsof_project.model.repository.UserRepository;
 import com.upn.sistemas.capsof_project.service.ICompanyOfferService;
+import com.upn.sistemas.capsof_project.service.dto.CompanyDTO;
 import com.upn.sistemas.capsof_project.service.dto.CompanyOfferDTO;
 import com.upn.sistemas.capsof_project.service.dto.CompanyOfferSaveDTO;
 import com.upn.sistemas.capsof_project.service.dto.ParamDomainDTO;
@@ -58,6 +62,9 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 
 	@Autowired
 	private SkillsCompanyOfferRepository skillsCompanyOfferRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Override
 	public CompanyOfferDTO addCompanyOffer(CompanyOfferSaveDTO companyOfferSaveDTO) throws CapsofException {
@@ -222,7 +229,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 				companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
 				Optional<Company> company = companyRepository.findById(companyOffer.getCompanyId().getCompanyId());
 				if (company.isPresent()) {
-					companyOfferDTO.setCompanyId(company.get().getCompanyId());
+					companyOfferDTO.setCompanyDTO(this.maper.map(company.get(), CompanyDTO.class));
 				}
 				companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
 				companyOfferDTO.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
@@ -241,6 +248,43 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 				}
 				companyOfferDTOs.add(companyOfferDTO);
 			}
+		}
+
+		return companyOfferDTOs;
+	}
+
+	@Override
+	public List<CompanyOfferDTO> findCompanyOfferByProfileUserType(Long userId) throws CapsofException {
+
+		List<CompanyOfferDTO> companyOfferDTOs = new ArrayList<>();
+		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
+		Optional<User> user = userRepository.findById(userId);
+		List<Long> domainIds = new ArrayList<>();
+
+		if (user.isPresent()) {
+
+			List<UserProfiles> userProfiles = user.get().getUserProfilesList();
+
+			for (UserProfiles userProf : userProfiles) {
+				domainIds.add(userProf.getProfile().getDomTpProfileId().getDomainId());
+			}
+
+			List<CompanyOffer> companyOffers = companyOfferRepository.findByDomTpProfileId_DomainIdIn(domainIds);
+
+			for (CompanyOffer companyOffer : companyOffers) {
+				companyOfferDTO = new CompanyOfferDTO();
+				companyOfferDTO = this.maper.map(companyOffer, CompanyOfferDTO.class);
+				companyOfferDTO.setCompanyDTO(this.maper.map(companyOffer.getCompanyId(), CompanyDTO.class));
+				companyOfferDTO.setOfferDescription(companyOffer.getOfferDesc());
+				companyOfferDTO.setQuantityVacants(companyOffer.getQuantVacants());
+				companyOfferDTO.setApplicationsOffers(companyOffer.getOfferApps());
+				companyOfferDTO.setDateExpiry(companyOffer.getExpDate());
+				companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
+				companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
+				companyOfferDTO.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
+				companyOfferDTOs.add(companyOfferDTO);
+			}
+
 		}
 
 		return companyOfferDTOs;

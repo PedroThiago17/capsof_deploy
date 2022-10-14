@@ -86,5 +86,17 @@ public class CompanyOfferController {
 		final List<CompanyOfferDTO> response = this.companyOfferService.findCompanyOffersByCompanyId(companyId);
 		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
+	
+	@GetMapping(value = "/findTypeProfile/user/{userId}")
+	@ApiOperation(value = Constants.COMP_OFFER_API_OP_GET_BY_USER)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> findCompanyOfferByProfileUserType(@PathVariable Long userId) throws CapsofException {
+		final List<CompanyOfferDTO> response = this.companyOfferService.findCompanyOfferByProfileUserType(userId);
+		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 
 }

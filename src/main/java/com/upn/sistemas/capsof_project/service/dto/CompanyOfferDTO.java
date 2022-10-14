@@ -6,7 +6,7 @@ import java.util.List;
 public class CompanyOfferDTO {
 
 	private Long companyOfferId;
-	private Long companyId;
+	private CompanyDTO companyDTO;
 	private String offerTitle;
 	private String offerDescription;
 	private Integer quantityVacants;
@@ -25,12 +25,12 @@ public class CompanyOfferDTO {
 		this.companyOfferId = companyOfferId;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public CompanyDTO getCompanyDTO() {
+		return companyDTO;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setCompanyDTO(CompanyDTO companyDTO) {
+		this.companyDTO = companyDTO;
 	}
 
 	public String getOfferTitle() {

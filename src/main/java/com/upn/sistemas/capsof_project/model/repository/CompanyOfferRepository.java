@@ -17,4 +17,5 @@ public interface CompanyOfferRepository extends JpaRepository<CompanyOffer, Long
 	
 	List<CompanyOffer> findByCompanyId_CompanyId(Long companyId);
 	
+	List<CompanyOffer> findByDomTpProfileId_DomainIdIn(List<Long> domainIds);	
 }

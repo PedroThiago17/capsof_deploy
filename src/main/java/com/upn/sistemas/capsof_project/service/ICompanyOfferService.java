@@ -15,5 +15,7 @@ public interface ICompanyOfferService {
 	public String deleteCompanyOffer(Long companyOfferId) throws CapsofException;
 
 	public List<CompanyOfferDTO> findCompanyOffersByCompanyId(Long companyId) throws CapsofException;
+	
+	public List<CompanyOfferDTO> findCompanyOfferByProfileUserType(Long userId) throws CapsofException;
 
 }
