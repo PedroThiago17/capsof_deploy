@@ -86,15 +86,15 @@ public class CompanyController {
 			final CompanyDTO response = this.companyService.addCompany(companySaveDTO);
 			if ("EMAIL_DUPLICATED".equals(response.getResponseStatus())) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-						.body(new String("Email company alraedy exist"));
+						.body(new String("EMAIL_DUPLICATED"));
 			}
 			if ("RUC_DUPLICATED".equals(response.getResponseStatus())) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-						.body(new String("RUC alraedy exist"));
+						.body(new String("RUC_DUPLICATED"));
 			}
 			if ("COMPANY_CODE_DUPLICATED".equals(response.getResponseStatus())) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-						.body(new String("Company code alraedy exist"));
+						.body(new String("COMPANY_CODE_DUPLICATED"));
 			}
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {

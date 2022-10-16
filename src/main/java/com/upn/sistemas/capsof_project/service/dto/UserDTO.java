@@ -15,6 +15,7 @@ public class UserDTO implements Serializable {
 	private String userEmail;
 	private String userPhone;
 	private List<String> roles;
+	private String responseStatus;
 
 	public String getUserDni() {
 		return userDni;
@@ -79,4 +80,13 @@ public class UserDTO implements Serializable {
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
+
+	public String getResponseStatus() {
+		return responseStatus;
+	}
+
+	public void setResponseStatus(String responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
 }

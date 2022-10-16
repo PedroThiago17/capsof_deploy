@@ -69,9 +69,9 @@ public class UserController {
 	public ResponseEntity<Object> addUser(@Validated @RequestBody UserSaveDTO userSave) {
 		try {
 			final UserDTO response = this.userService.addUser(userSave);
-			if (Objects.isNull(response)) {
+			if ("DNI_DUPLICATED".equals(response.getResponseStatus())) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-						.body(new String("User DNI alraedy exist"));
+						.body(new String("DNI_DUPLICATED"));
 			}
 			if (Objects.isNull(response.getUserEmail())) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)

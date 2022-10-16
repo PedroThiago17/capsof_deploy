@@ -74,12 +74,23 @@ public class UserServiceImpl implements IUserService {
 	public Optional<User> findByUserEmail(String userEmail) {
 		return userRepository.findByUserEmail(userEmail);
 	}
+	
+	private Optional<User> findByUserDni(String userDni) {
+		return userRepository.findByUserDni(userDni);
+	}
 
 	@Override
 	public UserDTO addUser(UserSaveDTO userSave) {
 		final Optional<UserType> defaultRole = userTypeRepository.findById(Constants.ROLE_USER_VALUE);
 
 		try {
+			
+			if (findByUserDni(userSave.getUserDni()).isPresent()) {
+				UserDTO userDTO = new UserDTO();
+				userDTO.setResponseStatus("DNI_DUPLICATED");
+				return userDTO;
+			}
+			
 			if (!(findByUserEmail(userSave.getUserEmail()).isPresent())) {
 				User userModel = this.maper.map(userSave, User.class);
 				userModel.setUserPass(Base64.getEncoder().encodeToString(userSave.getUserPass().getBytes()));
