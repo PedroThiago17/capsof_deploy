@@ -1,6 +1,7 @@
 package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +81,7 @@ public class CompanyServiceImpl implements ICompanyService {
 
 		Company company = new Company();
 		company = maper.map(companySaveDTO, Company.class);
+		company.setCompanyPass(Base64.getEncoder().encodeToString(companySaveDTO.getCompanyPass().getBytes()));
 		company.setCreationDate(calendar.getTime());
 		company.setCompanyState(Constants.TRUE_VALUE);
 		company = companyRepository.save(company);
