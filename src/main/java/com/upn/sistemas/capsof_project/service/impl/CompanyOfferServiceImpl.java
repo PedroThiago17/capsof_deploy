@@ -2,6 +2,7 @@ package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,6 +83,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		Optional<Company> company = companyRepository.findById(companyOfferSaveDTO.getCompanyId());
 		if (company.isPresent()) {
 			companyOffer.setCompanyId(company.get());
+			companyOfferDTO.setCompanyDTO(this.maper.map(company.get(), CompanyDTO.class));
 		}
 		setDataExperienceAndDomCompanyOffer(companyOfferSaveDTO, companyOfferDTO, companyOffer);
 
@@ -91,6 +93,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		setSkillsForCompanyOffer(companyOfferSaveDTO, companyOffer, skillDTOs);
 
 		companyOfferDTO.setSkillsDTO(skillDTOs);
+		companyOfferDTO.setCompanyOfferId(companyOffer.getOfferId());
 
 		return companyOfferDTO;
 	}
@@ -177,12 +180,14 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 			Optional<Company> company = companyRepository.findById(companyOfferSaveDTO.getCompanyId());
 			if (company.isPresent()) {
 				companyOffer.get().setCompanyId(company.get());
+				companyOfferDTO.setCompanyDTO(this.maper.map(company.get(), CompanyDTO.class));
 			}
 			CompanyOffer companyOfferSave = companyOfferRepository.save(companyOffer.get());
 			skillsCompanyOfferRepository.deleteByCompanyOffer_OfferId(companyOfferSave.getOfferId());
 			List<SkillDTO> skillsAddDTO = new ArrayList<>();
 			setSkillsForCompanyOffer(companyOfferSaveDTO, companyOfferSave, skillsAddDTO);
 			companyOfferDTO.setSkillsDTO(skillsAddDTO);
+			companyOfferDTO.setCompanyOfferId(companyOfferSave.getOfferId());
 		} else {
 			throw new CapsofException(String.valueOf(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND.value(),
 					StringUtils.join("Company Offer", StringUtils.SPACE, StringUtils.SPACE, "not found"));
@@ -226,7 +231,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 				companyOfferDTO.setQuantityVacants(companyOffer.getQuantVacants());
 				companyOfferDTO.setApplicationsOffers(companyOffer.getOfferApps());
 				companyOfferDTO.setDateExpiry(companyOffer.getExpDate());
-				companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
+				companyOfferDTO.setStatusOffer(companyOffer.getOfferState().trim());
 				Optional<Company> company = companyRepository.findById(companyOffer.getCompanyId().getCompanyId());
 				if (company.isPresent()) {
 					companyOfferDTO.setCompanyDTO(this.maper.map(company.get(), CompanyDTO.class));
@@ -242,6 +247,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 						skillDTO.setLevelSkill(offerSkills.getSkillNivel());
 						skillDTO.setSkillDescription(offerSkills.getSkill().getSkillDesc());
 						skillDTO.setSkillId(offerSkills.getSkill().getSkillId());
+						skillDTO.setSkillRequired(offerSkills.getSkillRequired().trim());
 						skillDTOs.add(skillDTO);
 					}
 					companyOfferDTO.setSkillsDTO(skillDTOs);
@@ -260,6 +266,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
 		Optional<User> user = userRepository.findById(userId);
 		List<Long> domainIds = new ArrayList<>();
+		Date date = new Date();
 
 		if (user.isPresent()) {
 
@@ -273,16 +280,20 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 
 			for (CompanyOffer companyOffer : companyOffers) {
 				companyOfferDTO = new CompanyOfferDTO();
-				companyOfferDTO = this.maper.map(companyOffer, CompanyOfferDTO.class);
-				companyOfferDTO.setCompanyDTO(this.maper.map(companyOffer.getCompanyId(), CompanyDTO.class));
-				companyOfferDTO.setOfferDescription(companyOffer.getOfferDesc());
-				companyOfferDTO.setQuantityVacants(companyOffer.getQuantVacants());
-				companyOfferDTO.setApplicationsOffers(companyOffer.getOfferApps());
-				companyOfferDTO.setDateExpiry(companyOffer.getExpDate());
-				companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
-				companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
-				companyOfferDTO.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
-				companyOfferDTOs.add(companyOfferDTO);
+				if (companyOffer.getOfferState().trim().equals(Constants.ACTIVE_CONSTANT)
+						&& companyOffer.getExpDate().after(date)) {
+					companyOfferDTO = this.maper.map(companyOffer, CompanyOfferDTO.class);
+					companyOfferDTO.setCompanyDTO(this.maper.map(companyOffer.getCompanyId(), CompanyDTO.class));
+					companyOfferDTO.setOfferDescription(companyOffer.getOfferDesc());
+					companyOfferDTO.setQuantityVacants(companyOffer.getQuantVacants());
+					companyOfferDTO.setApplicationsOffers(companyOffer.getOfferApps());
+					companyOfferDTO.setDateExpiry(companyOffer.getExpDate());
+					companyOfferDTO.setStatusOffer(companyOffer.getOfferState());
+					companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
+					companyOfferDTO
+							.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
+					companyOfferDTOs.add(companyOfferDTO);
+				}
 			}
 
 		}

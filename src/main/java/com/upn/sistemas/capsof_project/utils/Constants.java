@@ -7,6 +7,7 @@ public class Constants {
 	public static final String FALSE_VALUE = "FALSE";
 	public static final Long ROLE_USER_VALUE = (long) 2;
 	public static final String OK = "OK";
+	public static final String ACTIVE_CONSTANT = "A";
 	/* End values */
 
 	/* Strings */
