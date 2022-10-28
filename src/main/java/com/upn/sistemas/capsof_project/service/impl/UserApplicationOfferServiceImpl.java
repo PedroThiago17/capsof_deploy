@@ -1,5 +1,7 @@
 package com.upn.sistemas.capsof_project.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -129,6 +131,25 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 	private Optional<UserApplications> getUserApplicationByCompanyOfferAndUser(Long companyOfferId, Long userId) {
 		return userApplicationsRepository.findByUserApplicationsPK_OfferIdAndUserApplicationsPK_UserId(companyOfferId,
 				userId);
+	}
+
+	@Override
+	public List<UserApplicationOfferDTO> retrieveUserApplicationOfferByUser(Long userId) {
+
+		List<UserApplicationOfferDTO> userApplicationOfferDTOs = new ArrayList<>();
+		UserApplicationOfferDTO userApplicationOfferDTO = new UserApplicationOfferDTO();
+
+		List<UserApplications> userApplications = userApplicationsRepository.findByUserApplicationsPK_UserId(userId);
+
+		for (UserApplications userApplicationsIterable : userApplications) {
+			userApplicationOfferDTO = new UserApplicationOfferDTO();
+			userApplicationOfferDTO = this.maper.map(userApplicationsIterable, UserApplicationOfferDTO.class);
+			userApplicationOfferDTO.setCompanyOfferDTO(this.maper.map(userApplications, null));
+			userApplicationOfferDTO.setUserDTO(this.maper.map(userApplications, null));
+			userApplicationOfferDTOs.add(userApplicationOfferDTO);
+		}
+
+		return userApplicationOfferDTOs;
 	}
 
 }

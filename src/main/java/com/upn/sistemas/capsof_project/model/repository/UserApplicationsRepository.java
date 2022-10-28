@@ -1,5 +1,6 @@
 package com.upn.sistemas.capsof_project.model.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,7 @@ public interface UserApplicationsRepository extends JpaRepository<UserApplicatio
 
 	Optional<UserApplications> findByUserApplicationsPK_OfferIdAndUserApplicationsPK_UserId(long companyOfferId,
 			long userId);
+
+	List<UserApplications> findByUserApplicationsPK_UserId(long userId);
 
 }
