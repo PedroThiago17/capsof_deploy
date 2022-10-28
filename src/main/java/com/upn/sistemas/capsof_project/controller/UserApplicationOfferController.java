@@ -51,6 +51,14 @@ public class UserApplicationOfferController {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 						.body(new String("USER_NOT_FOUND"));
 			}
+			if ("OFFER_APPS_MAX".equals(response.getResponseStatus())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+						.body(new String("OFFER_APPS_MAX"));
+			}
+			if ("USER_APP_OFFER_SAME_EXIST".equals(response.getResponseStatus())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+						.body(new String("USER_APP_OFFER_SAME_EXIST"));
+			}
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)

@@ -44,7 +44,24 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 			userApplicationOfferDTO.setResponseStatus("COMPANY_NOT_FOUND");
 			return userApplicationOfferDTO;
 		} else {
+
+			if (companyOffer.get().getQuantVacants() == companyOffer.get().getOfferApps()) {
+				userApplicationOfferDTO.setResponseStatus("OFFER_APPS_MAX");
+				return userApplicationOfferDTO;
+			}
+
+			Optional<UserApplications> userApplications = getUserApplicationByCompanyOfferAndUser(
+					userApplicationOfferSaveDTO.getOfferId(), userApplicationOfferSaveDTO.getUserId());
+
+			if (userApplications.isPresent()) {
+				userApplicationOfferDTO.setResponseStatus("USER_APP_OFFER_SAME_EXIST");
+				return userApplicationOfferDTO;
+			}
+
 			userApplicationOfferDTO.setCompanyOfferDTO(this.maper.map(companyOffer.get(), CompanyOfferDTO.class));
+			int quantity = companyOffer.get().getOfferApps();
+			companyOffer.get().setOfferApps(quantity + 1);
+			companyOfferRepository.save(companyOffer.get());
 		}
 
 		Optional<User> user = getUser(userApplicationOfferSaveDTO.getUserId());
@@ -55,8 +72,6 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 		} else {
 			userApplicationOfferDTO.setUserDTO(this.maper.map(user.get(), UserDTO.class));
 		}
-		
-		//TODO set quantity vacant
 
 		UserApplicationsPK userApplicationsPK = new UserApplicationsPK();
 		userApplicationsPK.setOfferId(userApplicationOfferSaveDTO.getOfferId());
@@ -98,7 +113,14 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 			userApplication.setApplicationState(userApplicationOfferSaveDTO.getApplicationState());
 			userApplication = userApplicationsRepository.save(userApplication);
 			userApplicationOfferDTO = this.maper.map(userApplication, UserApplicationOfferDTO.class);
-			//TODO set quantity vacant
+			Optional<CompanyOffer> companyOffer = getCompanyOffer(userApplicationOfferSaveDTO.getOfferId());
+			int quantity = companyOffer.get().getOfferApps();
+
+			if (quantity != 0) {
+				companyOffer.get().setOfferApps(quantity - 1);
+				companyOfferRepository.save(companyOffer.get());
+			}
+
 		}
 
 		return userApplicationOfferDTO;
