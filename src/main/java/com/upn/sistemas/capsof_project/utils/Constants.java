@@ -68,5 +68,10 @@ public class Constants {
 	public static final String SKILL_API_OP_GET_ALL = "Get all skills from database";
 	public static final String SKILL_API_OP_GET_BY_TYPE = "Get all skills by type from database";
 	/* End Skill Controller */
+	
+	/* User Application Controller */
+	public static final String USER_APPLICATION_OFFER_SAVE = "User Application Offer Save";
+	public static final String USER_APPLICATION_OFFER_UPDATE = "User Application Offer Update";
+	/* End User Application Controller */
 
 }
