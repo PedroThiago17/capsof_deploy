@@ -11,6 +11,7 @@ public class CompanyOfferDTO {
 	private String offerDescription;
 	private Integer quantityVacants;
 	private Integer applicationsOffers;
+	private Integer percentageSimilarity;
 	private Date dateExpiry;
 	private String statusOffer;
 	private ParamDomainDTO domTpPerfil;
@@ -63,6 +64,14 @@ public class CompanyOfferDTO {
 
 	public void setApplicationsOffers(Integer applicationsOffers) {
 		this.applicationsOffers = applicationsOffers;
+	}
+
+	public Integer getPercentageSimilarity() {
+		return percentageSimilarity;
+	}
+
+	public void setPercentageSimilarity(Integer percentageSimilarity) {
+		this.percentageSimilarity = percentageSimilarity;
 	}
 
 	public Date getDateExpiry() {

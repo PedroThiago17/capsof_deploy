@@ -2,6 +2,7 @@ package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +25,7 @@ import com.upn.sistemas.capsof_project.model.OfferSkills;
 import com.upn.sistemas.capsof_project.model.OfferSkillsPK;
 import com.upn.sistemas.capsof_project.model.ParamDomain;
 import com.upn.sistemas.capsof_project.model.Skill;
+import com.upn.sistemas.capsof_project.model.SkillsProfile;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.model.UserProfiles;
 import com.upn.sistemas.capsof_project.model.repository.CompanyOfferRepository;
@@ -31,6 +33,8 @@ import com.upn.sistemas.capsof_project.model.repository.CompanyRepository;
 import com.upn.sistemas.capsof_project.model.repository.ParamDomainRepository;
 import com.upn.sistemas.capsof_project.model.repository.SkillRepository;
 import com.upn.sistemas.capsof_project.model.repository.SkillsCompanyOfferRepository;
+import com.upn.sistemas.capsof_project.model.repository.SkillsProfileRepository;
+import com.upn.sistemas.capsof_project.model.repository.UserApplicationsRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRepository;
 import com.upn.sistemas.capsof_project.service.ICompanyOfferService;
 import com.upn.sistemas.capsof_project.service.dto.CompanyDTO;
@@ -63,9 +67,15 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 
 	@Autowired
 	private SkillsCompanyOfferRepository skillsCompanyOfferRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private SkillsProfileRepository skillsProfileRepository;
+
+	@Autowired
+	private UserApplicationsRepository userApplicationsRepository;
 
 	@Override
 	public CompanyOfferDTO addCompanyOffer(CompanyOfferSaveDTO companyOfferSaveDTO) throws CapsofException {
@@ -203,7 +213,8 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		Optional<CompanyOffer> companyOffer = companyOfferRepository.findByOfferId(companyOfferId);
 
 		if (companyOffer.isPresent()) {
-			companyOfferRepository.delete(companyOffer.get());
+			userApplicationsRepository.deleteByUserApplicationsPK_OfferId(companyOfferId);
+			companyOfferRepository.deleteByOfferId(companyOffer.get().getOfferId());
 		} else {
 			throw new CapsofException(String.valueOf(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND.value(), StringUtils
 					.join("Company Offer", StringUtils.SPACE, companyOfferId, StringUtils.SPACE, "not found"));
@@ -292,6 +303,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 					companyOfferDTO.setDomExpe(this.maper.map(companyOffer.getDomExpId(), ParamDomainDTO.class));
 					companyOfferDTO
 							.setDomTpPerfil(this.maper.map(companyOffer.getDomTpProfileId(), ParamDomainDTO.class));
+					companyOfferDTO.setPercentageSimilarity(calculatePercentageSimilarity(user.get(), companyOffer));
 					companyOfferDTOs.add(companyOfferDTO);
 				}
 			}
@@ -299,6 +311,45 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		}
 
 		return companyOfferDTOs;
+	}
+
+	private Integer calculatePercentageSimilarity(User user, CompanyOffer companyOffer) {
+
+		List<Long> companyOfferSkillProfileIds = new ArrayList<>();
+		Integer percentage = 0;
+
+		for (OfferSkills offerSkills : companyOffer.getOfferSkillsList()) {
+			companyOfferSkillProfileIds.add(offerSkills.getSkill().getSkillId());
+		}
+
+		Collections.sort(companyOfferSkillProfileIds);
+
+		List<Long> profileUserIds = new ArrayList<>();
+
+		for (UserProfiles userProfiles : user.getUserProfilesList()) {
+			profileUserIds.add(userProfiles.getProfile().getProfileId());
+		}
+
+		List<SkillsProfile> skillsProfiles = skillsProfileRepository.findByProfile_ProfileIdIn(profileUserIds);
+		List<Long> userProfileSkillsIds = new ArrayList<>();
+
+		for (SkillsProfile skillsProfile : skillsProfiles) {
+			userProfileSkillsIds.add(skillsProfile.getSkill().getSkillId());
+		}
+
+		Collections.sort(userProfileSkillsIds);
+
+		int countSkillHaveUser = 0;
+
+		for (Long companyOfferSkillProfileId : companyOfferSkillProfileIds) {
+			if (userProfileSkillsIds.contains(companyOfferSkillProfileId)) {
+				countSkillHaveUser++;
+			}
+		}
+
+		percentage = (countSkillHaveUser * 100) / companyOfferSkillProfileIds.size();
+
+		return percentage;
 	}
 
 }

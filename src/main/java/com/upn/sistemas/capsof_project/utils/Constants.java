@@ -72,6 +72,7 @@ public class Constants {
 	/* User Application Controller */
 	public static final String USER_APPLICATION_OFFER_SAVE = "User Application Offer Save";
 	public static final String USER_APPLICATION_OFFER_UPDATE = "User Application Offer Update";
+	public static final String USER_APPLICATION_OFFER_GET = "User Application Offer Retrieve";
 	/* End User Application Controller */
 
 }

@@ -4,8 +4,6 @@ import java.util.Date;
 
 public class UserApplicationOfferDTO {
 
-	private long idUserApplicationOffer;
-
 	private Date applicationDate;
 
 	private Date desapplicationDate;
@@ -17,14 +15,6 @@ public class UserApplicationOfferDTO {
 	private UserDTO userDTO;
 
 	private String responseStatus;
-
-	public long getIdUserApplicationOffer() {
-		return idUserApplicationOffer;
-	}
-
-	public void setIdUserApplicationOffer(long idUserApplicationOffer) {
-		this.idUserApplicationOffer = idUserApplicationOffer;
-	}
 
 	public Date getApplicationDate() {
 		return applicationDate;

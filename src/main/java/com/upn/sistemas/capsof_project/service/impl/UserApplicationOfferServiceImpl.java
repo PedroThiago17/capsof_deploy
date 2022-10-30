@@ -2,12 +2,15 @@ package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.upn.sistemas.capsof_project.exceptions.CapsofException;
 import com.upn.sistemas.capsof_project.model.CompanyOffer;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.model.UserApplications;
@@ -15,14 +18,15 @@ import com.upn.sistemas.capsof_project.model.UserApplicationsPK;
 import com.upn.sistemas.capsof_project.model.repository.CompanyOfferRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserApplicationsRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRepository;
-import com.upn.sistemas.capsof_project.service.UserApplicationOfferService;
+import com.upn.sistemas.capsof_project.service.IUserApplicationOfferService;
+import com.upn.sistemas.capsof_project.service.dto.CompanyDTO;
 import com.upn.sistemas.capsof_project.service.dto.CompanyOfferDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserApplicationOfferDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserApplicationOfferSaveDTO;
 import com.upn.sistemas.capsof_project.service.dto.UserDTO;
 
 @Service
-public class UserApplicationOfferServiceImpl implements UserApplicationOfferService {
+public class UserApplicationOfferServiceImpl implements IUserApplicationOfferService {
 
 	@Autowired
 	UserApplicationsRepository userApplicationsRepository;
@@ -43,7 +47,7 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 		Optional<CompanyOffer> companyOffer = getCompanyOffer(userApplicationOfferSaveDTO.getOfferId());
 
 		if (!companyOffer.isPresent()) {
-			userApplicationOfferDTO.setResponseStatus("COMPANY_NOT_FOUND");
+			userApplicationOfferDTO.setResponseStatus("COMPANY_OFFER_NOT_FOUND");
 			return userApplicationOfferDTO;
 		} else {
 
@@ -60,10 +64,11 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 				return userApplicationOfferDTO;
 			}
 
-			userApplicationOfferDTO.setCompanyOfferDTO(this.maper.map(companyOffer.get(), CompanyOfferDTO.class));
 			int quantity = companyOffer.get().getOfferApps();
 			companyOffer.get().setOfferApps(quantity + 1);
-			companyOfferRepository.save(companyOffer.get());
+			CompanyOffer companyOfferSave = companyOfferRepository.save(companyOffer.get());
+
+			mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOfferSave);
 		}
 
 		Optional<User> user = getUser(userApplicationOfferSaveDTO.getUserId());
@@ -72,7 +77,17 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 			userApplicationOfferDTO.setResponseStatus("USER_NOT_FOUND");
 			return userApplicationOfferDTO;
 		} else {
-			userApplicationOfferDTO.setUserDTO(this.maper.map(user.get(), UserDTO.class));
+			UserDTO userDTO = new UserDTO();
+			userDTO.setUserId(user.get().getUserId());
+			userDTO.setUserDesc(
+					Objects.nonNull(user.get().getUserDesc()) ? user.get().getUserDesc() : StringUtils.EMPTY);
+			userDTO.setUserDni(user.get().getUserDni());
+			userDTO.setUserEmail(user.get().getUserEmail());
+			userDTO.setUserLastNames(user.get().getUserLastNames());
+			userDTO.setUserNames(user.get().getUserNames());
+			userDTO.setUserPhone(
+					Objects.nonNull(user.get().getUserPhone()) ? user.get().getUserPhone() : StringUtils.EMPTY);
+			userApplicationOfferDTO.setUserDTO(userDTO);
 		}
 
 		UserApplicationsPK userApplicationsPK = new UserApplicationsPK();
@@ -85,7 +100,8 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 		userApplications.setApplicationState(userApplicationOfferSaveDTO.getApplicationState());
 
 		userApplications = userApplicationsRepository.save(userApplications);
-		userApplicationOfferDTO = this.maper.map(userApplications, UserApplicationOfferDTO.class);
+		userApplicationOfferDTO.setApplicationDate(userApplications.getApplicationDate());
+		userApplicationOfferDTO.setApplicationState(userApplications.getApplicationState());
 
 		return userApplicationOfferDTO;
 	}
@@ -117,15 +133,60 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 			userApplicationOfferDTO = this.maper.map(userApplication, UserApplicationOfferDTO.class);
 			Optional<CompanyOffer> companyOffer = getCompanyOffer(userApplicationOfferSaveDTO.getOfferId());
 			int quantity = companyOffer.get().getOfferApps();
+			CompanyOffer companyOfferSave = new CompanyOffer();
 
 			if (quantity != 0) {
 				companyOffer.get().setOfferApps(quantity - 1);
-				companyOfferRepository.save(companyOffer.get());
+				companyOfferSave = companyOfferRepository.save(companyOffer.get());
 			}
+
+			mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOfferSave);
+			mapDataUserDTO(userApplicationOfferSaveDTO.getUserId(), userApplicationOfferDTO);
 
 		}
 
 		return userApplicationOfferDTO;
+	}
+
+	private void mapDataUserDTO(Long userId, UserApplicationOfferDTO userApplicationOfferDTO) {
+		Optional<User> user = getUser(userId);
+
+		if (user.isPresent()) {
+			UserDTO userDTO = new UserDTO();
+			userDTO.setUserId(user.get().getUserId());
+			userDTO.setUserDesc(
+					Objects.nonNull(user.get().getUserDesc()) ? user.get().getUserDesc() : StringUtils.EMPTY);
+			userDTO.setUserDni(user.get().getUserDni().trim());
+			userDTO.setUserEmail(user.get().getUserEmail().trim());
+			userDTO.setUserLastNames(user.get().getUserLastNames().trim());
+			userDTO.setUserNames(user.get().getUserNames().trim());
+			userDTO.setUserPhone(
+					Objects.nonNull(user.get().getUserPhone()) ? user.get().getUserPhone().trim() : StringUtils.EMPTY);
+			userApplicationOfferDTO.setUserDTO(userDTO);
+		}
+	}
+
+	private void mapDataCompanyOfferDTO(UserApplicationOfferDTO userApplicationOfferDTO,
+			CompanyOffer companyOfferSave) {
+		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
+		CompanyDTO companyDTO = new CompanyDTO();
+		companyOfferDTO.setCompanyOfferId(companyOfferSave.getOfferId());
+		companyOfferDTO.setApplicationsOffers(companyOfferSave.getOfferApps());
+		companyOfferDTO.setDateExpiry(companyOfferSave.getExpDate());
+		companyOfferDTO.setOfferDescription(companyOfferSave.getOfferDesc().trim());
+		companyOfferDTO.setOfferTitle(companyOfferSave.getOfferTitle().trim());
+		companyOfferDTO.setQuantityVacants(companyOfferSave.getQuantVacants());
+		companyOfferDTO.setStatusOffer(companyOfferSave.getOfferState().trim());
+
+		companyDTO.setCompanyId(companyOfferSave.getCompanyId().getCompanyId());
+		companyDTO.setCompanyEmail(companyOfferSave.getCompanyId().getCompanyEmail().trim());
+		companyDTO.setCompanyCode(companyOfferSave.getCompanyId().getCompanyCode().trim());
+		companyDTO.setCompanyName(companyOfferSave.getCompanyId().getCompanyName().trim());
+		companyDTO.setCompanyRuc(companyOfferSave.getCompanyId().getCompanyRuc().trim());
+		companyDTO.setCompanyState(companyOfferSave.getCompanyId().getCompanyState().trim());
+
+		companyOfferDTO.setCompanyDTO(companyDTO);
+		userApplicationOfferDTO.setCompanyOfferDTO(companyOfferDTO);
 	}
 
 	private Optional<UserApplications> getUserApplicationByCompanyOfferAndUser(Long companyOfferId, Long userId) {
@@ -140,16 +201,30 @@ public class UserApplicationOfferServiceImpl implements UserApplicationOfferServ
 		UserApplicationOfferDTO userApplicationOfferDTO = new UserApplicationOfferDTO();
 
 		List<UserApplications> userApplications = userApplicationsRepository.findByUserApplicationsPK_UserId(userId);
+		Optional<CompanyOffer> companyOffer = Optional.empty();
 
 		for (UserApplications userApplicationsIterable : userApplications) {
 			userApplicationOfferDTO = new UserApplicationOfferDTO();
 			userApplicationOfferDTO = this.maper.map(userApplicationsIterable, UserApplicationOfferDTO.class);
-			userApplicationOfferDTO.setCompanyOfferDTO(this.maper.map(userApplications, null));
-			userApplicationOfferDTO.setUserDTO(this.maper.map(userApplications, null));
+			companyOffer = getCompanyOffer(userApplicationsIterable.getUserApplicationsPK().getOfferId());
+			if (companyOffer.isPresent()) {
+				mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOffer.get());
+			}
+			mapDataUserDTO(userId, userApplicationOfferDTO);
 			userApplicationOfferDTOs.add(userApplicationOfferDTO);
 		}
 
 		return userApplicationOfferDTOs;
+	}
+
+	@Override
+	public List<UserApplicationOfferDTO> retrieveUserApplicationOfferByCompanyId(Long companyId)
+			throws CapsofException {
+		
+		
+		//Show profiles apply for each companyOffer
+		
+		return null;
 	}
 
 }

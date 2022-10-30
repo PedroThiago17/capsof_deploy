@@ -1,5 +1,6 @@
 package com.upn.sistemas.capsof_project.model.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ public interface SkillsProfileRepository extends JpaRepository<SkillsProfile, Lo
 	void deleteByProfile_ProfileIdAndSkill_SkillId(Long profileId, Long skillId);
 	
 	void deleteByProfile_ProfileId(Long profileId);
+	
+	List<SkillsProfile> findByProfile_ProfileIdIn(List<Long> profileIds);
 
 }
