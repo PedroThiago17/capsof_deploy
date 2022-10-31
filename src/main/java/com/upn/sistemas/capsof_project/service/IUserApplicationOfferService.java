@@ -14,6 +14,6 @@ public interface IUserApplicationOfferService {
 
 	List<UserApplicationOfferDTO> retrieveUserApplicationOfferByUser(Long userId);
 
-	List<UserApplicationOfferDTO> retrieveUserApplicationOfferByCompanyId(Long companyId) throws CapsofException;
+	List<UserApplicationOfferDTO> retrieveUserApplicationByOfferId(Long offerId) throws CapsofException;
 
 }

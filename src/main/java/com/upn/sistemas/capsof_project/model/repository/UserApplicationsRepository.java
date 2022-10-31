@@ -18,5 +18,7 @@ public interface UserApplicationsRepository extends JpaRepository<UserApplicatio
 	List<UserApplications> findByUserApplicationsPK_UserId(long userId);
 	
 	void deleteByUserApplicationsPK_OfferId(Long offerId);
+	
+	List<UserApplications> findByUserApplicationsPK_OfferId(Long offerId);
 
 }

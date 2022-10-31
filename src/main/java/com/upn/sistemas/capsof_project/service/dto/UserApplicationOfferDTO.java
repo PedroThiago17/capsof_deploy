@@ -9,6 +9,8 @@ public class UserApplicationOfferDTO {
 	private Date desapplicationDate;
 
 	private String applicationState;
+	
+	private Integer percentageSimilarity;
 
 	private CompanyOfferDTO companyOfferDTO;
 
@@ -38,6 +40,14 @@ public class UserApplicationOfferDTO {
 
 	public void setApplicationState(String applicationState) {
 		this.applicationState = applicationState;
+	}
+
+	public Integer getPercentageSimilarity() {
+		return percentageSimilarity;
+	}
+
+	public void setPercentageSimilarity(Integer percentageSimilarity) {
+		this.percentageSimilarity = percentageSimilarity;
 	}
 
 	public CompanyOfferDTO getCompanyOfferDTO() {

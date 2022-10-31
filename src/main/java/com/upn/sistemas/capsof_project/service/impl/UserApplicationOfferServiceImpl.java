@@ -1,6 +1,7 @@
 package com.upn.sistemas.capsof_project.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,10 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.upn.sistemas.capsof_project.exceptions.CapsofException;
 import com.upn.sistemas.capsof_project.model.CompanyOffer;
+import com.upn.sistemas.capsof_project.model.OfferSkills;
+import com.upn.sistemas.capsof_project.model.SkillsProfile;
 import com.upn.sistemas.capsof_project.model.User;
 import com.upn.sistemas.capsof_project.model.UserApplications;
 import com.upn.sistemas.capsof_project.model.UserApplicationsPK;
+import com.upn.sistemas.capsof_project.model.UserProfiles;
 import com.upn.sistemas.capsof_project.model.repository.CompanyOfferRepository;
+import com.upn.sistemas.capsof_project.model.repository.SkillsProfileRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserApplicationsRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRepository;
 import com.upn.sistemas.capsof_project.service.IUserApplicationOfferService;
@@ -36,6 +41,9 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	private SkillsProfileRepository skillsProfileRepository;
 
 	private ModelMapper maper = new ModelMapper();
 
@@ -218,13 +226,70 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 	}
 
 	@Override
-	public List<UserApplicationOfferDTO> retrieveUserApplicationOfferByCompanyId(Long companyId)
-			throws CapsofException {
-		
-		
-		//Show profiles apply for each companyOffer
-		
-		return null;
+	public List<UserApplicationOfferDTO> retrieveUserApplicationByOfferId(Long offerId) throws CapsofException {
+
+		List<UserApplicationOfferDTO> userApplicationOfferDTOs = new ArrayList<>();
+		UserApplicationOfferDTO userApplicationOfferDTO = new UserApplicationOfferDTO();
+
+		List<UserApplications> userApplicationOffers = userApplicationsRepository
+				.findByUserApplicationsPK_OfferId(offerId);
+		Optional<User> user = Optional.empty();
+		Optional<CompanyOffer> companyOffer = getCompanyOffer(offerId);
+
+		for (UserApplications userApplications : userApplicationOffers) {
+			userApplicationOfferDTO = new UserApplicationOfferDTO();
+			mapDataUserDTO(userApplications.getUserApplicationsPK().getUserId(), userApplicationOfferDTO);
+			user = userRepository.findById(userApplications.getUserApplicationsPK().getUserId());
+			if (user.isPresent() && companyOffer.isPresent()) {
+				userApplicationOfferDTO
+						.setPercentageSimilarity(calculatePercentageSimilarity(user.get(), companyOffer.get()));
+			}
+			if (companyOffer.isPresent()) {
+				mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOffer.get());
+			}
+			userApplicationOfferDTOs.add(userApplicationOfferDTO);
+		}
+
+		return userApplicationOfferDTOs;
+	}
+
+	private Integer calculatePercentageSimilarity(User user, CompanyOffer companyOffer) {
+
+		List<Long> companyOfferSkillProfileIds = new ArrayList<>();
+		Integer percentage = 0;
+
+		for (OfferSkills offerSkills : companyOffer.getOfferSkillsList()) {
+			companyOfferSkillProfileIds.add(offerSkills.getSkill().getSkillId());
+		}
+
+		Collections.sort(companyOfferSkillProfileIds);
+
+		List<Long> profileUserIds = new ArrayList<>();
+
+		for (UserProfiles userProfiles : user.getUserProfilesList()) {
+			profileUserIds.add(userProfiles.getProfile().getProfileId());
+		}
+
+		List<SkillsProfile> skillsProfiles = skillsProfileRepository.findByProfile_ProfileIdIn(profileUserIds);
+		List<Long> userProfileSkillsIds = new ArrayList<>();
+
+		for (SkillsProfile skillsProfile : skillsProfiles) {
+			userProfileSkillsIds.add(skillsProfile.getSkill().getSkillId());
+		}
+
+		Collections.sort(userProfileSkillsIds);
+
+		int countSkillHaveUser = 0;
+
+		for (Long companyOfferSkillProfileId : companyOfferSkillProfileIds) {
+			if (userProfileSkillsIds.contains(companyOfferSkillProfileId)) {
+				countSkillHaveUser++;
+			}
+		}
+
+		percentage = (countSkillHaveUser * 100) / companyOfferSkillProfileIds.size();
+
+		return percentage;
 	}
 
 }
