@@ -122,5 +122,22 @@ public class CompanyOfferController {
 					.body(e.getLocalizedMessage());
 		}
 	}
+	
+	@GetMapping(value = "{companyOfferId}")
+	@ApiOperation(value = Constants.COMP_OFFER_API_BY_ID_OP_GET)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> findCompanyOfferByCompanyOfferId(@PathVariable Long companyOfferId)
+			throws CapsofException {
+		final CompanyOfferDTO response = this.companyOfferService.findCompanyOfferByCompanyOfferId(companyOfferId);
+		if ("COMPANY_OFFER_NOT_FOUND".equals(response.getResponseStatus())) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+					.body(new String("COMPANY_OFFER_NOT_FOUND"));
+		}
+		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 
 }

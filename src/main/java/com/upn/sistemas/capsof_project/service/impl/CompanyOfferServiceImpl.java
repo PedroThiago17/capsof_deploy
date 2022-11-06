@@ -352,4 +352,32 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 		return percentage;
 	}
 
+	@Override
+	public CompanyOfferDTO findCompanyOfferByCompanyOfferId(Long companyOfferId) throws CapsofException {
+
+		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
+		Optional<CompanyOffer> companyOffer = companyOfferRepository.findByOfferId(companyOfferId);
+
+		if (companyOffer.isPresent()) {
+			companyOfferDTO = this.maper.map(companyOfferDTO, CompanyOfferDTO.class);
+			companyOfferDTO = this.maper.map(companyOffer, CompanyOfferDTO.class);
+			companyOfferDTO.setCompanyDTO(this.maper.map(companyOffer.get().getCompanyId(), CompanyDTO.class));
+			companyOfferDTO.setOfferTitle(companyOffer.get().getOfferTitle());
+			companyOfferDTO.setCompanyOfferId(companyOfferId);
+			companyOfferDTO.setOfferDescription(companyOffer.get().getOfferDesc());
+			companyOfferDTO.setQuantityVacants(companyOffer.get().getQuantVacants());
+			companyOfferDTO.setApplicationsOffers(companyOffer.get().getOfferApps());
+			companyOfferDTO.setDateExpiry(companyOffer.get().getExpDate());
+			companyOfferDTO.setStatusOffer(companyOffer.get().getOfferState());
+			companyOfferDTO.setDomExpe(this.maper.map(companyOffer.get().getDomExpId(), ParamDomainDTO.class));
+			companyOfferDTO
+					.setDomTpPerfil(this.maper.map(companyOffer.get().getDomTpProfileId(), ParamDomainDTO.class));
+		} else {
+			companyOfferDTO.setResponseStatus("COMPANY_OFFER_NOT_FOUND");
+			return companyOfferDTO;
+		}
+
+		return companyOfferDTO;
+	}
+
 }

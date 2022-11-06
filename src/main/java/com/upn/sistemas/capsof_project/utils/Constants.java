@@ -58,6 +58,7 @@ public class Constants {
 	public static final String COMP_OFFER_API_OP_DELETE = "Delete a company offer by id from database";
 	public static final String COMP_OFFER_API_OP_PUT = "Update a company offer by id from database";
 	public static final String COMP_OFFER_API_OP_GET_BY_USER = "Get all company offer by user id and type profiles from database";
+	public static final String COMP_OFFER_API_BY_ID_OP_GET = "Get  company offer by company offer id from database";
 	/* End CompanyOffer Controller */
 
 	/* Domain Controller */

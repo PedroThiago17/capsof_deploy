@@ -17,6 +17,7 @@ public class CompanyOfferDTO {
 	private ParamDomainDTO domTpPerfil;
 	private ParamDomainDTO domExpe;
 	private List<SkillDTO> skillsDTO;
+	private String responseStatus;
 
 	public Long getCompanyOfferId() {
 		return companyOfferId;
@@ -112,6 +113,14 @@ public class CompanyOfferDTO {
 
 	public void setSkillsDTO(List<SkillDTO> skillsDTO) {
 		this.skillsDTO = skillsDTO;
+	}
+
+	public String getResponseStatus() {
+		return responseStatus;
+	}
+
+	public void setResponseStatus(String responseStatus) {
+		this.responseStatus = responseStatus;
 	}
 
 }
