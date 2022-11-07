@@ -16,4 +16,7 @@ public interface IUserApplicationOfferService {
 
 	List<UserApplicationOfferDTO> retrieveUserApplicationByOfferId(Long offerId) throws CapsofException;
 
+	UserApplicationOfferDTO changeStatusUserApplication(Long companyOfferId, Long userId, String newStatus)
+			throws CapsofException;
+
 }

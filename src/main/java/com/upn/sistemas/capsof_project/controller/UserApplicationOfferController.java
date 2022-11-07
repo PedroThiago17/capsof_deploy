@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upn.sistemas.capsof_project.exceptions.CapsofException;
@@ -104,6 +105,29 @@ public class UserApplicationOfferController {
 		try {
 			final List<UserApplicationOfferDTO> response = this.userApplicationOfferService
 					.retrieveUserApplicationOfferByUser(userId);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+					.body(e.getLocalizedMessage());
+		}
+	}
+	
+	@PutMapping(value = "/user/{userId}/companyOffer/{companyOfferId}")
+	@ApiOperation(value = Constants.USER_APPLICATION_CHANGE_STATUS_UPDATE)
+	@ApiResponses({ @ApiResponse(code = 201, message = Constants.HTTP_TEXT_201),
+			@ApiResponse(code = 400, message = Constants.HTTP_TEXT_400),
+			@ApiResponse(code = 401, message = Constants.HTTP_TEXT_401),
+			@ApiResponse(code = 403, message = Constants.HTTP_TEXT_403),
+			@ApiResponse(code = 500, message = Constants.HTTP_TEXT_500) })
+	public ResponseEntity<Object> changeStatusUserApplication(@PathVariable Long userId,
+			@PathVariable Long companyOfferId, @RequestParam String newStatus) throws CapsofException {
+		try {
+			final UserApplicationOfferDTO response = this.userApplicationOfferService
+					.changeStatusUserApplication(companyOfferId, userId, newStatus);
+			if ("COMPANY_OFFER_APPLY_NOT_FOUND".equals(response.getResponseStatus())) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+						.body(new String("COMPANY_OFFER_APPLY_NOT_FOUND"));
+			}
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)

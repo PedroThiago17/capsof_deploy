@@ -181,7 +181,9 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 		companyOfferDTO.setCompanyOfferId(companyOfferSave.getOfferId());
 		companyOfferDTO.setApplicationsOffers(companyOfferSave.getOfferApps());
 		companyOfferDTO.setDateExpiry(companyOfferSave.getExpDate());
-		companyOfferDTO.setOfferDescription(companyOfferSave.getOfferDesc().trim());
+		if (Objects.nonNull(companyOfferSave.getOfferDesc())) {
+			companyOfferDTO.setOfferDescription(companyOfferSave.getOfferDesc().trim());
+		}
 		companyOfferDTO.setOfferTitle(companyOfferSave.getOfferTitle().trim());
 		companyOfferDTO.setQuantityVacants(companyOfferSave.getQuantVacants());
 		companyOfferDTO.setStatusOffer(companyOfferSave.getOfferState().trim());
@@ -290,6 +292,50 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 		percentage = (countSkillHaveUser * 100) / companyOfferSkillProfileIds.size();
 
 		return percentage;
+	}
+
+	@Override
+	public UserApplicationOfferDTO changeStatusUserApplication(Long companyOfferId, Long userId, String newStatus)
+			throws CapsofException {
+
+		UserApplicationOfferDTO userApplicationOfferDTO = new UserApplicationOfferDTO();
+
+		Optional<UserApplications> userApplications = getUserApplicationByCompanyOfferAndUser(companyOfferId, userId);
+
+		if (!userApplications.isPresent()) {
+			userApplicationOfferDTO.setResponseStatus("COMPANY_OFFER_APPLY_NOT_FOUND");
+			return userApplicationOfferDTO;
+		} else {
+			UserApplications userApplication = userApplications.get();
+			userApplication.setApplicationState(newStatus.trim());
+			userApplication = userApplicationsRepository.save(userApplication);
+			userApplicationOfferDTO = this.maper.map(userApplication, UserApplicationOfferDTO.class);
+			Optional<CompanyOffer> companyOffer = getCompanyOffer(companyOfferId);
+			mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOffer.get());
+
+			Optional<User> user = getUser(userId);
+
+			if (user.isPresent()) {
+				UserDTO userDTO = new UserDTO();
+				userDTO.setUserId(user.get().getUserId());
+				userDTO.setUserDesc(
+						Objects.nonNull(user.get().getUserDesc()) ? user.get().getUserDesc() : StringUtils.EMPTY);
+				userDTO.setUserDni(user.get().getUserDni().trim());
+				userDTO.setUserEmail(user.get().getUserEmail().trim());
+				userDTO.setUserLastNames(user.get().getUserLastNames().trim());
+				userDTO.setUserNames(user.get().getUserNames().trim());
+				userDTO.setUserPhone(Objects.nonNull(user.get().getUserPhone()) ? user.get().getUserPhone().trim()
+						: StringUtils.EMPTY);
+				userApplicationOfferDTO.setUserDTO(userDTO);
+				if (companyOffer.isPresent()) {
+					userApplicationOfferDTO
+							.setPercentageSimilarity(calculatePercentageSimilarity(user.get(), companyOffer.get()));
+				}
+			}
+
+		}
+
+		return userApplicationOfferDTO;
 	}
 
 }
