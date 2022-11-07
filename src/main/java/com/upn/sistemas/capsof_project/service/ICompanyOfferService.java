@@ -18,6 +18,6 @@ public interface ICompanyOfferService {
 	
 	public List<CompanyOfferDTO> findCompanyOfferByProfileUserType(Long userId) throws CapsofException;
 	
-	public CompanyOfferDTO findCompanyOfferByCompanyOfferId(Long companyOfferId) throws CapsofException;
+	public CompanyOfferDTO findCompanyOfferByCompanyOfferId(Long companyOfferId, Long userId) throws CapsofException;
 
 }

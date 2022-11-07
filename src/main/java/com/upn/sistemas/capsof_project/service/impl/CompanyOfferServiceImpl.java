@@ -353,7 +353,7 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 	}
 
 	@Override
-	public CompanyOfferDTO findCompanyOfferByCompanyOfferId(Long companyOfferId) throws CapsofException {
+	public CompanyOfferDTO findCompanyOfferByCompanyOfferId(Long companyOfferId, Long userId) throws CapsofException {
 
 		CompanyOfferDTO companyOfferDTO = new CompanyOfferDTO();
 		Optional<CompanyOffer> companyOffer = companyOfferRepository.findByOfferId(companyOfferId);
@@ -372,6 +372,13 @@ public class CompanyOfferServiceImpl implements ICompanyOfferService {
 			companyOfferDTO.setDomExpe(this.maper.map(companyOffer.get().getDomExpId(), ParamDomainDTO.class));
 			companyOfferDTO
 					.setDomTpPerfil(this.maper.map(companyOffer.get().getDomTpProfileId(), ParamDomainDTO.class));
+			if (Objects.nonNull(userId)) {
+				Optional<User> user = userRepository.findById(userId);
+				if (user.isPresent()) {
+					companyOfferDTO
+							.setPercentageSimilarity(calculatePercentageSimilarity(user.get(), companyOffer.get()));
+				}
+			}
 		} else {
 			companyOfferDTO.setResponseStatus("COMPANY_OFFER_NOT_FOUND");
 			return companyOfferDTO;
