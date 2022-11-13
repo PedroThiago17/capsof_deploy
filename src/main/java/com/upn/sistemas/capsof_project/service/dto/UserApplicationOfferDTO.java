@@ -1,6 +1,7 @@
 package com.upn.sistemas.capsof_project.service.dto;
 
 import java.util.Date;
+import java.util.List;
 
 public class UserApplicationOfferDTO {
 
@@ -15,6 +16,8 @@ public class UserApplicationOfferDTO {
 	private CompanyOfferDTO companyOfferDTO;
 
 	private UserDTO userDTO;
+	
+	private List<ProfileDTO> profilesDto;
 
 	private String responseStatus;
 
@@ -64,6 +67,14 @@ public class UserApplicationOfferDTO {
 
 	public void setUserDTO(UserDTO userDTO) {
 		this.userDTO = userDTO;
+	}
+
+	public List<ProfileDTO> getProfilesDto() {
+		return profilesDto;
+	}
+
+	public void setProfilesDto(List<ProfileDTO> profilesDto) {
+		this.profilesDto = profilesDto;
 	}
 
 	public String getResponseStatus() {

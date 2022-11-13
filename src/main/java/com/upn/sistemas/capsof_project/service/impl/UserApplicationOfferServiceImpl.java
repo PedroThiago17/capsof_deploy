@@ -23,6 +23,7 @@ import com.upn.sistemas.capsof_project.model.repository.CompanyOfferRepository;
 import com.upn.sistemas.capsof_project.model.repository.SkillsProfileRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserApplicationsRepository;
 import com.upn.sistemas.capsof_project.model.repository.UserRepository;
+import com.upn.sistemas.capsof_project.service.IProfileService;
 import com.upn.sistemas.capsof_project.service.IUserApplicationOfferService;
 import com.upn.sistemas.capsof_project.service.dto.CompanyDTO;
 import com.upn.sistemas.capsof_project.service.dto.CompanyOfferDTO;
@@ -44,6 +45,9 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 
 	@Autowired
 	private SkillsProfileRepository skillsProfileRepository;
+	
+	@Autowired
+	private IProfileService profileService;
 
 	private ModelMapper maper = new ModelMapper();
 
@@ -245,7 +249,11 @@ public class UserApplicationOfferServiceImpl implements IUserApplicationOfferSer
 			if (user.isPresent() && companyOffer.isPresent()) {
 				userApplicationOfferDTO
 						.setPercentageSimilarity(calculatePercentageSimilarity(user.get(), companyOffer.get()));
+				userApplicationOfferDTO.setProfilesDto(profileService.findProfilesByUserId(user.get().getUserId()));
 			}
+			userApplicationOfferDTO.setApplicationDate(userApplications.getApplicationDate());
+			userApplicationOfferDTO.setApplicationState(userApplications.getApplicationState().trim());
+			userApplicationOfferDTO.setDesapplicationDate(userApplications.getDesapplicationDate());
 			if (companyOffer.isPresent()) {
 				mapDataCompanyOfferDTO(userApplicationOfferDTO, companyOffer.get());
 			}
